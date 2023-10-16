@@ -8,7 +8,7 @@ import java.util.Date
 sealed class Fise(var state: FiseState) {
 
     companion object {
-        const val SERVICE_PHONE_NUMBER = "55555"
+        const val SERVICE_PHONE_NUMBER = "+55555"
         const val SERVICE_CODE = "fise ah01"
         const val BALANCE = "Saldo ah01"
 
