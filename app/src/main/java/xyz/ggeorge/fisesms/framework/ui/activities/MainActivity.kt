@@ -1,9 +1,11 @@
 package xyz.ggeorge.fisesms.framework.ui.activities
 
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,8 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.room.Room
 import xyz.ggeorge.components.Page
 import xyz.ggeorge.components.TabBar
+import xyz.ggeorge.fisesms.data.database.AppDatabase
+import xyz.ggeorge.fisesms.data.entities.FiseEntity
 import xyz.ggeorge.fisesms.framework.ui.lib.PERMISSIONS
 import xyz.ggeorge.fisesms.framework.ui.lib.requiredPermissions
 import xyz.ggeorge.fisesms.framework.ui.navigation.pages.ProcessPage
@@ -39,8 +44,17 @@ class MainActivity : ComponentActivity() {
     private val smsReceiver: SmsReceiver = SmsReceiver()
     private val intentFilter = IntentFilter(SmsReceiver.INTENT_FILTER)
 
+    private val db by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "fise_db"
+        ).build()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         requiredPermissions(listOf(PERMISSIONS.SEND_SMS, PERMISSIONS.RECEIVE_SMS)) { isGranted ->
             if (isGranted) {
 
