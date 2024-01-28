@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ScrollableTabRow
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -36,14 +38,20 @@ fun TabBar(
     }
 
     val coroutineScope = rememberCoroutineScope()
-    val horizontalPadding= 32.dp
+    val horizontalPadding = 32.dp
+
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+
+    val tabWidth = screenWidth.div(pages.size)
 
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = horizontalPadding,
-                vertical = horizontalPadding.div(4)),
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = horizontalPadding,
+                    vertical = horizontalPadding.div(4)
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -57,9 +65,12 @@ fun TabBar(
             indicator = indicator,
             edgePadding = horizontalPadding,
         ) {
+
             pages.map(Page::title).forEachIndexed { index, title ->
                 Tab(
-                    modifier = Modifier.zIndex(6f),
+                    modifier = Modifier
+                        .zIndex(6f)
+                        .width(tabWidth), // Usando el ancho calculado
                     text = { Text(text = title) },
                     selected = pagerState.currentPage == index,
                     onClick = {
@@ -70,6 +81,7 @@ fun TabBar(
                     },
                 )
             }
+
         }
 
         HorizontalPager(
@@ -88,9 +100,6 @@ fun TabBar(
             }
         }
     }
-
-
 }
-
 
 data class Page(val title: String, val content: @Composable () -> Unit)

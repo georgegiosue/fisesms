@@ -101,8 +101,8 @@ class MainActivity : ComponentActivity() {
                     },
                     pages = listOf(
                         Page("Procesar") { ProcessPage(vm = vm) },
-                        Page("Transacciones") {/*TODO*/ },
-                        Page("Beneficiarios") {/*TODO*/ })
+                        Page("Transacciones") {/*TODO*/ }
+                    )
                 )
             }
         }
