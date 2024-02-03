@@ -16,7 +16,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -24,10 +25,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
+import xyz.ggeorge.core.domain.Fise
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun FormFiseComponent( dniValue: String, onDniChange: (String) -> Unit,valeValue: String, onValeChange: (String) -> Unit,coroutine: CoroutineScope, onSubmit: (CoroutineScope) -> Unit) {
+fun FormFiseComponent(
+    coroutine: CoroutineScope,
+    onSubmit: (CoroutineScope, Fise.ToSend) -> Unit
+) {
+
+    val dni = remember {
+        mutableStateOf("")
+    }
+
+    val vale = remember {
+        mutableStateOf("")
+    }
 
     Text(
         text = "Datos",
@@ -37,13 +49,13 @@ fun FormFiseComponent( dniValue: String, onDniChange: (String) -> Unit,valeValue
 
     OutlinedTextField(
         modifier = Modifier.fillMaxWidth(),
-        value = dniValue,
+        value = dni.value,
         shape = RoundedCornerShape(16.dp),
         trailingIcon = {
-            if (dniValue.isNotEmpty()) {
+            if (dni.value.isNotEmpty()) {
                 IconButton(
                     onClick = {
-                        onDniChange("")
+                        dni.value = ""
                     }
                 ) {
                     Icon(
@@ -54,7 +66,7 @@ fun FormFiseComponent( dniValue: String, onDniChange: (String) -> Unit,valeValue
                 }
             }
         },
-        onValueChange = { onDniChange(it) },
+        onValueChange = { dni.value = it},
         label = { Text("DNI") },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number)
     )
@@ -64,13 +76,13 @@ fun FormFiseComponent( dniValue: String, onDniChange: (String) -> Unit,valeValue
 
     OutlinedTextField(
         modifier = Modifier.fillMaxWidth(),
-        value = valeValue,
+        value = vale.value,
         shape = RoundedCornerShape(16.dp),
         trailingIcon = {
-            if (valeValue.isNotEmpty()) {
+            if (vale.value.isNotEmpty()) {
                 IconButton(
                     onClick = {
-                        onValeChange("")
+                        vale.value = ""
                     }
                 ) {
                     Icon(
@@ -81,7 +93,7 @@ fun FormFiseComponent( dniValue: String, onDniChange: (String) -> Unit,valeValue
                 }
             }
         },
-        onValueChange = { onValeChange(it) },
+        onValueChange = { vale.value = it },
         label = { Text("Vale") },
         supportingText = { Text("Formato: 05-04-23-123456-1") },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number)
@@ -95,7 +107,8 @@ fun FormFiseComponent( dniValue: String, onDniChange: (String) -> Unit,valeValue
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(vertical = 16.dp),
             onClick = {
-                onSubmit(coroutine)
+                val fise = Fise.ToSend(dni.value, vale.value)
+                onSubmit(coroutine, fise)
             }
         ){
             Text(

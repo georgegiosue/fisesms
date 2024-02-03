@@ -27,6 +27,8 @@ fun CardIndicator(
     subtitle: String,
     icon: @Composable () -> Unit,
     data: String,
+    onSuspense: Boolean = false,
+    fallback: @Composable () -> Unit = {},
     onClick: () -> Unit,
 ) {
 
@@ -39,14 +41,19 @@ fun CardIndicator(
     ) {
         Column(modifier = Modifier.padding(4.dp)) {
 
-            if (data.isNotEmpty()) {
-                Text(
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
-                    text = data,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    softWrap = true
-                )
+            if (data.isNotEmpty() || onSuspense) {
+                if (onSuspense) {
+                    fallback()
+                } else {
+                    Text(
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                        text = data,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        softWrap = true
+                    )
+                }
+
             }
 
             Row(

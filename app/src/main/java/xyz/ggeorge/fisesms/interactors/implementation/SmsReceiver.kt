@@ -8,6 +8,7 @@ import android.telephony.SmsMessage
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModelProvider
 import xyz.ggeorge.core.domain.SMS
+import xyz.ggeorge.core.domain.events.AppEvent
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.FiseViewModel
 
 class SmsReceiver() : BroadcastReceiver() {
@@ -31,8 +32,8 @@ class SmsReceiver() : BroadcastReceiver() {
                     val sms = SMS(phoneNumber, message)
                     val viewModel = ViewModelProvider(context as ComponentActivity)[FiseViewModel::class.java]
                     if (sms.passSms()) {
-                        viewModel.setOnProcessing(true)
-                        viewModel.setSmsReceived(sms)
+                        viewModel.setSms(sms)
+                        viewModel.onEvent(AppEvent.SMS_RECEIVED)
                     }
                 }
             }

@@ -1,58 +1,104 @@
 package xyz.ggeorge.fisesms.framework.ui.viewmodels
 
+import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import xyz.ggeorge.core.domain.Fise
 import xyz.ggeorge.core.domain.SMS
-import xyz.ggeorge.core.state.FiseState
+import xyz.ggeorge.core.domain.state.FiseState
+import xyz.ggeorge.fisesms.data.dao.FiseDao
+import xyz.ggeorge.fisesms.data.entities.FiseEntity
+import xyz.ggeorge.core.domain.events.AppEvent
+import xyz.ggeorge.core.domain.state.BalanceState
+import xyz.ggeorge.core.domain.events.ErrorEvent
+import xyz.ggeorge.core.domain.exceptions.FiseError
+import xyz.ggeorge.core.domain.state.ProcessState
+import xyz.ggeorge.fisesms.framework.ui.state.SortType
+import xyz.ggeorge.fisesms.framework.ui.lib.toast
+import xyz.ggeorge.fisesms.framework.ui.state.CouponsState
 import xyz.ggeorge.fisesms.interactors.implementation.SMSManager
 
-class FiseViewModel() : ViewModel() {
+@OptIn(ExperimentalCoroutinesApi::class)
+class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
-    private val _fise = mutableStateOf(Fise.ToSend("", ""))
-    val fise: State<Fise.ToSend> = _fise
+    private val _fise = mutableStateOf<Fise>(Fise.ToSend("", ""))
+    val fise: State<Fise> = _fise
 
-    private val _currentFise = mutableStateOf(null as Fise?)
-    val currentFise: State<Fise?> = _currentFise
+    private val _lastFiseSent = mutableStateOf<Fise.ToSend?>(null)
+    val lastFiseSent: State<Fise.ToSend?> = _lastFiseSent
 
-    private val _currentBalance = mutableStateOf("")
-    val currentBalance: State<String> = _currentBalance
+    private val _sortType = MutableStateFlow(SortType.PROCESS_TIMESTAMP_DESC)
 
-    private val _onProcessed = mutableStateOf(false)
-    val onProcessed: State<Boolean> = _onProcessed
+    private val _coupons = _sortType
+        .flatMapLatest { sortType ->
+            when(sortType) {
+                SortType.PROCESS_TIMESTAMP_ASC -> fiseDao.getAllOrderedByProcessedTimestampAsc()
+                SortType.PROCESS_TIMESTAMP_DESC -> fiseDao.getAllOrderedByProcessedTimestampDesc()
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-    private val _smsManager = SMSManager()
-    val smsManager = _smsManager
+    private val _state = MutableStateFlow(CouponsState())
 
-    private val _smsReceived = mutableStateOf<SMS?>(SMS("", ""))
-    val smsReceived: State<SMS?> = _smsReceived
+    val state = combine(_state, _sortType, _coupons) { state, sortType, coupons ->
+        state.copy(
+            coupons = coupons,
+            sortType = sortType
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), CouponsState())
 
-    val count = mutableStateOf(0)
+    private val _balance = mutableStateOf("")
+    val balance: State<String> = _balance
 
-    fun statusChange() = count.value++
+    private val _processState = mutableStateOf(ProcessState.INITIAL)
+    val processState: State<ProcessState> = _processState
 
-    fun setSmsReceived(sms: SMS?) {
-        _smsReceived.value = sms
+    private val _balanceState = mutableStateOf(BalanceState.INITIAL)
+    val balanceState: State<BalanceState> = _balanceState
+
+    private val smsManager = SMSManager()
+
+    private val sms = mutableStateOf<SMS?>(SMS("", ""))
+
+    private val _fiseError = mutableStateOf(FiseError(""))
+    val fiseError: State<FiseError> = _fiseError
+
+    private fun setProcessState(value: ProcessState) {
+        _processState.value = value
     }
 
-    fun getLastSendFise(): Fise? {
-
-        val state: FiseState = determinateState() ?: return currentFise.value
-        _currentFise.value = Fise.fromSMS(smsReceived.value!!, state)
-        return currentFise.value
+    private fun setBalanceState(value: BalanceState) {
+        _balanceState.value = value
     }
 
-    fun setCurrentFise(value: Fise?) {
-        _currentFise.value = value
+    fun setFise(fise: Fise) {
+        _fise.value = fise
     }
 
-    private fun determinateState(): FiseState? {
+    fun setSms(sms: SMS?) {
+        this.sms.value = sms
+    }
 
-        val smsBodyChars = _smsReceived.value?.body?.split(' ')
+    private fun smsToFise(sms: SMS, fiseState: FiseState): Fise {
+
+        return Fise.fromSMS(sms, fiseState)
+    }
+
+    private fun determinateState(): FiseState {
+
+        val smsBodyChars = sms.value?.body?.split(' ')
 
         try {
-            if (smsBodyChars?.get(1) == "saldo") return null
+            if (smsBodyChars?.get(1) == "saldo") return FiseState.CHECK_BALANCE
         } catch (e: IndexOutOfBoundsException) {
             e.printStackTrace()
         }
@@ -65,22 +111,109 @@ class FiseViewModel() : ViewModel() {
         }
     }
 
-    fun getBalance(): String {
+    private fun extractBalanceFromSms(sms: SMS): String = sms.body.split(':')[3]
 
-        if(determinateState() != null) return currentBalance.value
+    fun onEvent(event: AppEvent, ctx: Context? = null) {
+        when (event) {
+            AppEvent.SMS_RECEIVED -> {
 
-        var currentValue = ""
+                val state: FiseState = determinateState()
 
-        return try {
-            currentValue = _smsReceived.value?.body?.split(':')?.get(3)!!
-            _currentBalance.value = currentValue
-            currentValue
-        } catch (e: Exception) {
-            currentBalance.value
+                if (state == FiseState.CHECK_BALANCE) {
+                    _balance.value = extractBalanceFromSms(sms.value!!)
+
+                    setBalanceState(BalanceState.BALANCE_CHECKED)
+                }
+                else {
+                    _fise.value = smsToFise(sms.value!!, state)
+
+                    setProcessState(ProcessState.COUPON_RECEIVED)
+
+                    if (state == FiseState.PROCESSED) {
+                        viewModelScope.launch {
+
+                            val fiseProcessed = fise.value as Fise.Processed
+
+                            fiseDao.upsert(
+                                FiseEntity(
+                                    code = fiseProcessed.code,
+                                    dni = fiseProcessed.dni,
+                                    amount = fiseProcessed.amount,
+                                )
+                            )
+                        }
+                    }
+                }
+
+            }
+            AppEvent.PROCESS_COUPON -> {
+
+                viewModelScope.launch {
+
+                    val fiseToSend = fise.value as Fise.ToSend
+
+                    try {
+                        smsManager.send(
+                            SMS(
+                                Fise.SERVICE_PHONE_NUMBER,
+                                fiseToSend.payload()
+                            ),
+                            ctx!!
+                        )
+
+                        setProcessState(ProcessState.PROCESSING_COUPON)
+
+                        _lastFiseSent.value = fiseToSend
+
+                        ctx.toast("Mensaje Enviado")
+                    } catch (exception: Exception) {
+
+                        onErrorEvent(ErrorEvent.ON_ERROR_PROCESSING_COUPON, exception)
+                    }
+                }
+            }
+            AppEvent.CHECK_BALANCE -> {
+
+                viewModelScope.launch {
+
+                    try {
+
+                        smsManager.send(
+                            SMS(
+                                Fise.SERVICE_PHONE_NUMBER,
+                                Fise.BALANCE
+                            ),
+                            ctx!!
+                        )
+
+                        setBalanceState(BalanceState.CHECKING_BALANCE)
+
+                        ctx.toast("Mensaje Enviado")
+                    } catch (exception: Exception) {
+
+                        onErrorEvent(ErrorEvent.ON_ERROR_CHECKING_BALANCE, exception)
+                    }
+                }
+            }
         }
     }
 
-    fun setOnProcessing(value: Boolean) {
-        _onProcessed.value = value
+    fun onErrorEvent(errorEvent: ErrorEvent, exception: Exception) {
+
+        when (errorEvent) {
+            ErrorEvent.ON_ERROR_CHECKING_BALANCE -> {
+
+                _fiseError.value = FiseError("${exception.message} | Ocurrio un error al verificar el saldo de su cuenta ")
+
+
+                setBalanceState(BalanceState.ERROR_CHECKING_BALANCE)
+            }
+            ErrorEvent.ON_ERROR_PROCESSING_COUPON -> {
+
+                _fiseError.value = FiseError("${exception.message} | Por favor, verifique el DNI y/o el Codigo del Vale")
+
+                setProcessState(ProcessState.ERROR_PROCESSING_COUPON)
+            }
+        }
     }
 }

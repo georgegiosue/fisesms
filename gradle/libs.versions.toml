@@ -1,11 +1,13 @@
 [versions]
-kotlin = "1.8.10"
-compose = "1.5.3"
-compose-material = "1.5.3"
-lifecycle = "2.6.2"
+kotlin = "1.9.22"
+compose = "1.6.0"
+compose-material = "1.6.0"
+lifecycle = "2.7.0"
 accompanist = "0.27.1"
-androidGradlePlugin = "8.1.2"
+androidGradlePlugin = "8.2.2"
 junit = "4.13.2"
+room = "2.6.1"
+ksp = "1.9.22-1.0.17"
 
 [libraries]
 # Core
@@ -20,7 +22,7 @@ compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 compose-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "compose-material" }
 compose-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose-material" }
-compose-bom = { module = "androidx.compose:compose-bom", version = "2023.10.00" }
+compose-bom = { module = "androidx.compose:compose-bom", version = "2024.01.00" }
 
 # Material 3
 material3 = { module = "androidx.compose.material3:material3", version = "1.1.2"}
@@ -35,12 +37,16 @@ lifecycle-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-saveds
 
 #activity
 
-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.0" }
+activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.2" }
 
 #accompanist
 
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist"}
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist"}
+
+# Room
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 # Test
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -48,13 +54,17 @@ junit-android = { module = "androidx.test.ext:junit", version = "1.1.5" }
 espresso = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }
 compose-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
 compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
-compose-bom-test = { module = "androidx.compose:compose-bom", version = "2023.10.00" }
+compose-bom-test = { module = "androidx.compose:compose-bom", version = "2024.01.00" }
+
+# Annotation processors
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
 
 [bundles]
 # Bundles/groups of libraries

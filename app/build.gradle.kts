@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -40,7 +41,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packaging {
         resources {
@@ -61,6 +62,12 @@ dependencies {
     implementation (libs.bundles.accompanist)
     implementation (libs.kotlin.reflection)
     implementation (libs.material3)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+
+    annotationProcessor(libs.room.compiler)
+
+    ksp(libs.room.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.android)
