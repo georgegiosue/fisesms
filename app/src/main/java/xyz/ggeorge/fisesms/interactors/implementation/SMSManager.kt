@@ -12,7 +12,7 @@ class SMSManager : ISMSManager {
 
         if (sms.phone != Fise.SERVICE_PHONE_NUMBER) throw Exception("El número de teléfono no es el correcto")
 
-        return sms.body.length == Fise.ToSend.STANDAR_PROCESSED_LENGTH || sms.body.length == Fise.BALANCE.length
+        return sms.body.length == Fise.ToSend.STANDARD_PROCESSED_LENGTH || sms.body.length == Fise.BALANCE.length
     }
 
     override suspend fun send(sms: SMS, context: Context) {

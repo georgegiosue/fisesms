@@ -23,7 +23,7 @@ sealed class Fise(var state: FiseState) {
                         val vale = (VALE match smsBody)?.groupValues?.get(1)!!
                         val amount = (AMOUNT match smsBody)?.groupValues?.get(1)!!.toDouble()
 
-                        return Processed(dni=dni, vale=vale, amount=amount)
+                        return Processed(dni=dni, code=vale, amount=amount)
                     }
                 }
                 FiseState.PREVIOUSLY_PROCESSED -> {
@@ -48,20 +48,21 @@ sealed class Fise(var state: FiseState) {
 
     data class ToSend(
         var dni: String,
-        var vale: String,
+        var code: String,
         ) : Fise(FiseState.TO_SEND){
-        fun payload(): String = "$SERVICE_CODE $dni $vale"
+        fun payload(): String = "$SERVICE_CODE $dni $code"
         companion object {
             const val DNI_LENGTH= 8
-            const val VALE_LENGTH = 13
-            const val STANDAR_PROCESSED_LENGTH = SERVICE_CODE.length + 1 + DNI_LENGTH + 1 + VALE_LENGTH
+            const val CODE_LENGTH = 13
+            const val STANDARD_PROCESSED_LENGTH = SERVICE_CODE.length + 1 + DNI_LENGTH + 1 + CODE_LENGTH
         }
     }
 
     data class Processed(
         var dni: String,
-        var vale: String,
-        var amount: Double?
+        var code: String,
+        var amount: Double?,
+        val processedTimestamp: String? = null
         ) : Fise(FiseState.PROCESSED)
 
     data class PreviouslyProcessed(

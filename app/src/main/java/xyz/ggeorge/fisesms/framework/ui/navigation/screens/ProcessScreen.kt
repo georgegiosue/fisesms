@@ -143,7 +143,7 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
 
                         AlertDialog(
                             title = "¡Vale Procesado Exitosamente!",
-                            timer = "Se proceso el vale: ${fiseProcessed.vale}",
+                            timer = "Se proceso el vale: ${fiseProcessed.code}",
                             color = fiseSuccessfullyColor
                         )
                     }
@@ -154,7 +154,7 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
 
                         AlertDialog(
                             title = "¡Vale Procesado anteriormente!",
-                            timer = "Vale: ${vm.lastFiseSent.value!!.vale} \n Procesado por: ${fiseWasProcessed.agentDNI}",
+                            timer = "Vale: ${vm.lastFiseSent.value!!.code} \n Procesado por: ${fiseWasProcessed.agentDNI}",
                             color = fiseWasProcessedColor
                         )
                     }

@@ -5,11 +5,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material3.Icon
@@ -34,6 +37,7 @@ import xyz.ggeorge.fisesms.framework.ui.lib.PERMISSIONS
 import xyz.ggeorge.fisesms.framework.ui.lib.requiredPermissions
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.ProcessScreen
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.RequiredPermissionsPage
+import xyz.ggeorge.fisesms.framework.ui.navigation.screens.TransactionsScreen
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.FiseViewModel
 import xyz.ggeorge.fisesms.interactors.implementation.SmsReceiver
 import xyz.ggeorge.theme.FisesmsTheme
@@ -96,7 +100,7 @@ class MainActivity : ComponentActivity() {
             color = MaterialTheme.colorScheme.background
         ) {
 
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
@@ -123,7 +127,7 @@ class MainActivity : ComponentActivity() {
                     },
                     screens = listOf(
                         Screen("Procesar") { ProcessScreen(vm = viewModel) },
-                        Screen("Transacciones") {/*TODO*/ }
+                        Screen("Transacciones") { TransactionsScreen(vm = viewModel) }
                     )
                 )
             }

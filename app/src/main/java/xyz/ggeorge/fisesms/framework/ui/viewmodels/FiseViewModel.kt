@@ -5,6 +5,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.ggeorge.core.domain.Fise
 import xyz.ggeorge.core.domain.SMS
@@ -16,9 +22,12 @@ import xyz.ggeorge.core.domain.state.BalanceState
 import xyz.ggeorge.core.domain.events.ErrorEvent
 import xyz.ggeorge.core.domain.exceptions.FiseError
 import xyz.ggeorge.core.domain.state.ProcessState
+import xyz.ggeorge.fisesms.framework.ui.state.SortType
 import xyz.ggeorge.fisesms.framework.ui.lib.toast
+import xyz.ggeorge.fisesms.framework.ui.state.CouponsState
 import xyz.ggeorge.fisesms.interactors.implementation.SMSManager
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
     private val _fise = mutableStateOf<Fise>(Fise.ToSend("", ""))
@@ -26,6 +35,26 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
     private val _lastFiseSent = mutableStateOf<Fise.ToSend?>(null)
     val lastFiseSent: State<Fise.ToSend?> = _lastFiseSent
+
+    private val _sortType = MutableStateFlow(SortType.PROCESS_TIMESTAMP_DESC)
+
+    private val _coupons = _sortType
+        .flatMapLatest { sortType ->
+            when(sortType) {
+                SortType.PROCESS_TIMESTAMP_ASC -> fiseDao.getAllOrderedByProcessedTimestampAsc()
+                SortType.PROCESS_TIMESTAMP_DESC -> fiseDao.getAllOrderedByProcessedTimestampDesc()
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+
+    private val _state = MutableStateFlow(CouponsState())
+
+    val state = combine(_state, _sortType, _coupons) { state, sortType, coupons ->
+        state.copy(
+            coupons = coupons,
+            sortType = sortType
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), CouponsState())
 
     private val _balance = mutableStateOf("")
     val balance: State<String> = _balance
@@ -102,10 +131,14 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
                     if (state == FiseState.PROCESSED) {
                         viewModelScope.launch {
+
+                            val fiseProcessed = fise.value as Fise.Processed
+
                             fiseDao.upsert(
                                 FiseEntity(
-                                    code = (_fise.value as Fise.Processed).vale,
-                                    dni = (_fise.value as Fise.Processed).dni,
+                                    code = fiseProcessed.code,
+                                    dni = fiseProcessed.dni,
+                                    amount = fiseProcessed.amount,
                                 )
                             )
                         }
