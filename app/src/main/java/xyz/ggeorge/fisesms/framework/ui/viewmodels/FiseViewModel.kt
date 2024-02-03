@@ -99,6 +99,17 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
                     _fise.value = smsToFise(sms.value!!, state)
 
                     setProcessState(ProcessState.COUPON_RECEIVED)
+
+                    if (state == FiseState.PROCESSED) {
+                        viewModelScope.launch {
+                            fiseDao.upsert(
+                                FiseEntity(
+                                    code = (_fise.value as Fise.Processed).vale,
+                                    dni = (_fise.value as Fise.Processed).dni,
+                                )
+                            )
+                        }
+                    }
                 }
 
             }
@@ -170,18 +181,6 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
                 setProcessState(ProcessState.ERROR_PROCESSING_COUPON)
             }
-        }
-    }
-
-    fun testDatabase() {
-        val randomCode = (100000000..999999999).random().toString()
-        viewModelScope.launch {
-            fiseDao.upsert(
-                FiseEntity(
-                    code = randomCode,
-                    dni = "12345678"
-                )
-            )
         }
     }
 }
