@@ -6,15 +6,22 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ConfirmationNumber
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,7 +29,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import xyz.ggeorge.components.FiseCard
 import xyz.ggeorge.components.Header
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.FiseViewModel
@@ -30,9 +40,6 @@ import xyz.ggeorge.fisesms.framework.ui.viewmodels.FiseViewModel
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun TransactionsScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
-
-    val coroutine = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
 
     val ctx = LocalContext.current
 
@@ -45,15 +52,28 @@ fun TransactionsScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme(
     Header(header = Pair("Transacciones", "Vales procesados"))
 
     Spacer(modifier = Modifier.height(16.dp))
-    
-    LazyColumn(
-        modifier = Modifier.height(lazyColumnHeight),
-        state = rememberLazyListState(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
 
-        items(state.coupons) { fise ->
-            FiseCard(fise = fise.toDomain())
+    if (state.coupons.isEmpty()) {
+
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Text(text = "No hay vales FISE procesados.", style = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center))
+
+            Spacer(modifier = Modifier.width(8.dp))
+            
+            Icon(Icons.Outlined.ConfirmationNumber, contentDescription = "No hay vales procesados.")
+        }
+    } else {
+
+        LazyColumn(
+            modifier = Modifier.height(lazyColumnHeight),
+            state = rememberLazyListState(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+
+            items(state.coupons) { fise ->
+
+                FiseCard(fise = fise.toDomain())
+            }
         }
     }
 }
