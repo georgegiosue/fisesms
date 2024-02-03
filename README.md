@@ -60,16 +60,14 @@ The system processes the message and returns a text message with the result of t
 
 |||
 |-|-|
-|<img src="./.github/images/ss_process_page.png" alt="Process page" width="950"/>|<p style="font-size: medium">Fise SMS is an android application that allows LPG (Liquefied Petroleum Gas) suppliers to <b>process discount coupons</b>, check their <b>account balance</b>, make SMS requests quickly and easily with a user friendly interface.</p>|
-
-> *More functionalities such as transaction history and list of beneficiaries will be added soon.
+|<img src="./.github/images/ss_process_page.png" alt="Process page" width="950"/>|<p style="font-size: medium">Fise SMS is an android application that allows LPG (Liquefied Petroleum Gas) suppliers to <b>process discount coupons</b>, check their <b>account balance</b>, and check the latest coupons processed through transaction history. Make SMS requests quickly and easily with a user friendly interface.</p>|
 
 ## Installation 💻
 
 To run this application, you will need to have Android Studio installed on your machine. Here are the steps to install it:
 
 1. Download and install Android Studio from [here](https://developer.android.com/studio).
-2. Clone this repository on your local machine using `git clone https://github.com/5george/fisesms.git`.
+2. Clone this repository on your local machine using `git clone https://github.com/georgegiosue/fisesms.git`.
 
 ## Usage 📱
 
@@ -92,7 +90,7 @@ Contributions are always welcome. To contribute:
 
 ## Troubleshooting 🔧
 
-If you encounter any problems while setting up or running the application, please check the [Issues](https://github.com/5george/fisesms/issues) section of this repository to see if your issue has already been addressed. If not, feel free to open a new issue with a description of the problem you're experiencing.
+If you encounter any problems while setting up or running the application, please check the [Issues](https://github.com/georgegiosue/fisesms/issues) section of this repository to see if your issue has already been addressed. If not, feel free to open a new issue with a description of the problem you're experiencing.
 
 ## License 📄
 ```
