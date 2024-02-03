@@ -1,6 +1,6 @@
 package xyz.ggeorge.core.domain
 
-import xyz.ggeorge.core.state.FiseState
+import xyz.ggeorge.core.domain.state.FiseState
 import xyz.ggeorge.core.util.FiseRegex
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -55,7 +55,6 @@ sealed class Fise(var state: FiseState) {
             const val DNI_LENGTH= 8
             const val VALE_LENGTH = 13
             const val STANDAR_PROCESSED_LENGTH = SERVICE_CODE.length + 1 + DNI_LENGTH + 1 + VALE_LENGTH
-            const val STANDAR_BALANCE_LENGTH = BALANCE.length
         }
     }
 

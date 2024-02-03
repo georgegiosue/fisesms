@@ -9,7 +9,10 @@ import xyz.ggeorge.fisesms.interactors.abstraction.ISMSManager
 
 class SMSManager : ISMSManager {
     override fun checkBefore(sms: SMS): Boolean {
-        return sms.phone == Fise.SERVICE_PHONE_NUMBER && (sms.body.length == Fise.ToSend.STANDAR_PROCESSED_LENGTH || sms.body.length == Fise.ToSend.STANDAR_BALANCE_LENGTH)
+
+        if (sms.phone != Fise.SERVICE_PHONE_NUMBER) throw Exception("El número de teléfono no es el correcto")
+
+        return sms.body.length == Fise.ToSend.STANDAR_PROCESSED_LENGTH || sms.body.length == Fise.BALANCE.length
     }
 
     override suspend fun send(sms: SMS, context: Context) {
@@ -23,6 +26,6 @@ class SMSManager : ISMSManager {
                 null,
                 null
             )
-        else throw Exception("Syntax's error, please check the sms content length")
+        else throw Exception("Error al enviar el mensaje")
     }
 }

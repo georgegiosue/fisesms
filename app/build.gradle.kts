@@ -63,6 +63,7 @@ dependencies {
     implementation (libs.kotlin.reflection)
     implementation (libs.material3)
     implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
 
     annotationProcessor(libs.room.compiler)
 

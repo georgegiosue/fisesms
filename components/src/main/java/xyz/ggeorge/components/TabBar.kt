@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TabBar(
     header: @Composable () -> Unit,
-    pages: List<Page>
+    screens: List<Screen>
 ) {
     val pagerState = rememberPagerState()
     val indicator = @Composable { tabPositions: List<TabPosition> ->
@@ -42,7 +42,7 @@ fun TabBar(
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
-    val tabWidth = screenWidth.div(pages.size)
+    val tabWidth = screenWidth.div(screens.size)
 
     Column(Modifier.fillMaxSize()) {
         Row(
@@ -66,7 +66,7 @@ fun TabBar(
             edgePadding = horizontalPadding,
         ) {
 
-            pages.map(Page::title).forEachIndexed { index, title ->
+            screens.map(Screen::title).forEachIndexed { index, title ->
                 Tab(
                     modifier = Modifier
                         .zIndex(6f)
@@ -86,7 +86,7 @@ fun TabBar(
 
         HorizontalPager(
             modifier = Modifier.fillMaxSize(),
-            count = pages.size,
+            count = screens.size,
             state = pagerState,
         ) { page ->
             Column(
@@ -96,10 +96,10 @@ fun TabBar(
                     .padding(horizontal = horizontalPadding)
                     .padding(top = 16.dp)
             ) {
-                pages[page].content()
+                screens[page].content()
             }
         }
     }
 }
 
-data class Page(val title: String, val content: @Composable () -> Unit)
+data class Screen(val title: String, val content: @Composable () -> Unit)
