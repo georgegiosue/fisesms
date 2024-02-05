@@ -9,19 +9,20 @@
 
 Coming soon...
 
-<a href='#'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' height='80px'/></a>
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="Google Play" height="80">](https://github.com/georgegiosue/fisesms)
+&nbsp;
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://github.com/georgegiosue/fisesms)
+&nbsp;
 
+## Table of Contents
 
-## Table of Contents 📚
+1. [Overview](#overview)
+2. [Installation](#installation)
+3. [Contribution](#contribution)
+4. [Troubleshooting](#troubleshooting)
+5. [License](#license)
 
-1. [Overview](#overview-📖)
-2. [Installation](#installation-💻)
-3. [Usage](#usage-📱)
-4. [Contribution](#contribution-🤝)
-5. [Troubleshooting](#troubleshooting-🔧)
-6. [License](#license-📄)
-
-## Overview 📖
+## Overview
 
 ### What is FISE?
 
@@ -40,7 +41,7 @@ The compensation mechanism for the residential electricity tariff.
 
 #### How does it work?
 
-Text messages (SMS) are sent to the number `55555` with the discount code (`VALE`) and the `DNI` number of the beneficiary.
+Text messages (SMS) are sent to the number `+55555` with the discount code (`VALE`) and the `DNI` number of the beneficiary.
 
 ```html
 fise ah01 <DNI> <VALE>
@@ -62,23 +63,13 @@ The system processes the message and returns a text message with the result of t
 |-|-|
 |<img src="./.github/images/ss_process_page.png" alt="Process page" width="950"/>|<p style="font-size: medium">Fise SMS is an android application that allows LPG (Liquefied Petroleum Gas) suppliers to <b>process discount coupons</b>, check their <b>account balance</b>, and check the latest coupons processed through transaction history. Make SMS requests quickly and easily with a user friendly interface.</p>|
 
-## Installation 💻
+## Installation
 
-To run this application, you will need to have Android Studio installed on your machine. Here are the steps to install it:
+⬇️ You can download the latest version of the application in **.apk** by clicking the following link: 
 
-1. Download and install Android Studio from [here](https://developer.android.com/studio).
-2. Clone this repository on your local machine using `git clone https://github.com/georgegiosue/fisesms.git`.
+[Android Application Package (APK)](https://github.com/georgegiosue/fisesms/releases/latest/download/fisesms.apk)
 
-## Usage 📱
-
-To run the application, follow these steps:
-
-1. Open Android Studio.
-2. Click on "File" -> "Open".
-3. Navigate to the directory of the cloned repository and click on "Open".
-4. Once the project is open, click on "Run" -> "Run 'app'".
-
-## Contribution 🤝
+## Contribution
 
 Contributions are always welcome. To contribute:
 
@@ -88,10 +79,12 @@ Contributions are always welcome. To contribute:
 4. Push to the Branch (`git push origin feature/AmazingFeature`).
 5. Open a Pull Request.
 
-## Troubleshooting 🔧
+## Troubleshooting
 
 If you encounter any problems while setting up or running the application, please check the [Issues](https://github.com/georgegiosue/fisesms/issues) section of this repository to see if your issue has already been addressed. If not, feel free to open a new issue with a description of the problem you're experiencing.
 
-## License 📄
+For further assistance or if you have specific questions, you can also contact me by email at [peraldonamoc@gmail.com](mailto:peraldonamoc@gmail.com).
+
+## License
 
 [AGPL v3](./LICENSE)
