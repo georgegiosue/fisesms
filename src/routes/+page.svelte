@@ -1,9 +1,9 @@
 <script lang="ts" type="module">
-	import * as Alert from '$lib/components/ui/alert/index.js';
-	import ExclamationTriangle from 'svelte-radix/ExclamationTriangle.svelte';
-	import { qr } from '@svelte-put/qr/svg';
 	import QrDownload from '$lib/components/QrDownload.svelte';
-
+	import * as Alert from '$lib/components/ui/alert/index.js';
+	import { Button } from '$lib/components/ui/button';
+	import Commit from 'svelte-radix/Commit.svelte';
+	import ExclamationTriangle from 'svelte-radix/ExclamationTriangle.svelte';
 </script>
 
 <section>
@@ -13,13 +13,17 @@
 	</div>
 	<div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
 		<section class="space-y-4">
-			<article>
+			<article class="space-y-2">
 				<p class="text-justify antialiased">
 					Fise SMS es una aplicación de Android que permite a los proveedores de GLP (Gas Licuado de
 					Petróleo) <b>procesar cupones de descuento</b>, <b>verificar el saldo de su cuenta</b> y
 					consultar los últimos cupones procesados a través del <b>historial de transacciones</b>.
 					Realice solicitudes por SMS de forma rápida y sencilla con una interfaz fácil de usar.
 				</p>
+				<Button href="https://github.com/georgegiosue/fisesms" target="_blank" class="gap-2">
+					Código Fuente
+					<Commit />
+				</Button>
 			</article>
 			<article>
 				<Alert.Root>
@@ -42,7 +46,7 @@
 				Descargue la aplicación desde la tienda de aplicaciones de Google o F-Droid.
 			</h5>
 			<div class="flex gap-2">
-				<a href="/" >
+				<a href="/">
 					<img
 						src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
 						alt="Google Play"
@@ -50,7 +54,7 @@
 						height="160"
 					/>
 				</a>
-				<a href="/" >
+				<a href="/">
 					<img
 						src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
 						alt="F-Droid"
