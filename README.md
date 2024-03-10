@@ -1,3 +1,3 @@
 # Fise Docs
 
-Sitio web de documentación de FISE y Politicas de Privacidad
+Sitio web de documentación de Fise SMS y Politicas de Privacidad
