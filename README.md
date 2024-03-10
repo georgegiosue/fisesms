@@ -20,7 +20,8 @@ Coming soon...
 2. [Installation](#installation)
 3. [Contribution](#contribution)
 4. [Troubleshooting](#troubleshooting)
-5. [License](#license)
+5. [Privacy](#privacy)
+6. [License](#license)
 
 ## Overview
 
@@ -61,7 +62,7 @@ The system processes the message and returns a text message with the result of t
 
 |||
 |-|-|
-|<img src="./.github/images/ss_process_page.png" alt="Process page" width="950"/>|<p style="font-size: medium">Fise SMS is an android application that allows LPG (Liquefied Petroleum Gas) suppliers to <b>process discount coupons</b>, check their <b>account balance</b>, and check the latest coupons processed through transaction history. Make SMS requests quickly and easily with a user friendly interface.</p>|
+|<img src="./.github/images/ss_process_page.png" alt="Process page" width="950"/>|<p style="font-size: medium">Fise SMS is an android application that allows LPG (Liquefied Petroleum Gas) suppliers to <b>process discount coupons</b>, check their <b>account balance</b>, and check the latest coupons processed through transaction history. Make SMS requests quickly and easily with a user friendly interface.</p> <br> Visit <a href="https://fisesms.ggeorge.xyz">fisesms.ggeorge.xyz</a> for more information|
 
 ## Installation
 
@@ -84,6 +85,10 @@ Contributions are always welcome. To contribute:
 If you encounter any problems while setting up or running the application, please check the [Issues](https://github.com/georgegiosue/fisesms/issues) section of this repository to see if your issue has already been addressed. If not, feel free to open a new issue with a description of the problem you're experiencing.
 
 For further assistance or if you have specific questions, you can also contact me by email at [peraldonamoc@gmail.com](mailto:peraldonamoc@gmail.com).
+
+## Privacy
+
+Available in https://fisesms.ggeorge.xyz/privacy
 
 ## License
 
