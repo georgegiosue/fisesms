@@ -3,7 +3,11 @@
 	import * as Menubar from '$lib/components/ui/menubar';
 	import { ModeWatcher } from 'mode-watcher';
 	import { onMount } from 'svelte';
+	import { dev } from '$app/environment';
+	import { inject } from '@vercel/analytics';
 	import '../app.pcss';
+
+	inject({ mode: dev ? 'development' : 'production' });
 
 	onMount(() => {
 		function handleKeydown(e: KeyboardEvent) {
