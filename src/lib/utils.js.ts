@@ -1,7 +1,7 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { clsx, type ClassValue } from "clsx";
 import { cubicOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -60,3 +60,22 @@ export const flyAndScale = (
         easing: cubicOut
     };
 };
+
+export const usePathname = () => {
+
+    /**
+     * Only run in the browser environment
+     */
+
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    const port = window.location.port ? `:${window.location.port}` : '';
+    const path = window.location.pathname;
+
+    return {
+        hostname,
+        protocol,
+        port,
+        path
+    }
+}

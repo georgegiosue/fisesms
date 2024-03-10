@@ -1,10 +1,10 @@
 <script lang="ts">
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import * as Menubar from '$lib/components/ui/menubar';
+	import { dev } from '$app/environment';
+	import Navbar from '$lib/components/Navbar.svelte';
+	import { usePathname } from '$lib/utils.js';
+	import { inject } from '@vercel/analytics';
 	import { ModeWatcher } from 'mode-watcher';
 	import { onMount } from 'svelte';
-	import { dev } from '$app/environment';
-	import { inject } from '@vercel/analytics';
 	import '../app.pcss';
 
 	inject({ mode: dev ? 'development' : 'production' });
@@ -14,26 +14,22 @@
 			e.preventDefault();
 			const key = e.key;
 
-			const currentHostname = window.location.hostname;
-			const currentProtocol = window.location.protocol;
-			const currentPort = window.location.port ? `:${window.location.port}` : '';
+			const { hostname, protocol, port } = usePathname();
+			const baseUrl = `${protocol}//${hostname}${port}`;
 
 			switch (key) {
 				case 'p':
 				case 'P':
-					const redirectUrlPrivacy = `${currentProtocol}//${currentHostname}${currentPort}/privacy`;
-					window.location.href = redirectUrlPrivacy;
+					window.location.href = `${baseUrl}/privacy`;
 					break;
 				case 'a':
 				case 'A':
-					const redirectUrlFaq = `${currentProtocol}//${currentHostname}${currentPort}/faq`;
-					window.location.href = redirectUrlFaq;
+					window.location.href = `${baseUrl}/faq`;
 					break;
 
 				case 'h':
 				case 'H':
-					const redirectUrlHome = `${currentProtocol}//${currentHostname}${currentPort}/`;
-					window.location.href = redirectUrlHome;
+					window.location.href = `${baseUrl}/`;
 					break;
 			}
 		}
@@ -56,30 +52,7 @@
 </svelte:head>
 
 <main class="m-2 rounded-lg p-4 lg:m-24 lg:mx-48">
-	<nav class="flex justify-between">
-		<Menubar.Root>
-			<Menubar.Menu>
-				<Menubar.Trigger>
-					<a href="/"> Inicio <Menubar.Shortcut class="text-md ml-2">⌘H</Menubar.Shortcut></a>
-				</Menubar.Trigger>
-			</Menubar.Menu>
-			<Menubar.Menu>
-				<Menubar.Trigger>
-					<a href="/privacy">
-						Politica de Privacidad
-						<Menubar.Shortcut class="text-md ml-2">⌘P</Menubar.Shortcut>
-					</a>
-				</Menubar.Trigger>
-			</Menubar.Menu>
-			<Menubar.Menu>
-				<Menubar.Trigger>
-					<a href="/faq"> FAQ <Menubar.Shortcut class="text-md ml-2">⌘A</Menubar.Shortcut></a>
-				</Menubar.Trigger>
-			</Menubar.Menu>
-		</Menubar.Root>
-
-		<ThemeToggle />
-	</nav>
+	<Navbar />
 	<section class="py-4">
 		<slot />
 	</section>
