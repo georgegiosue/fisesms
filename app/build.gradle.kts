@@ -1,3 +1,6 @@
+import org.gradle.language.nativeplatform.internal.BuildType
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -12,8 +15,9 @@ android {
         applicationId = "xyz.ggeorge.fisesms"
         minSdk = 23
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = Versioning.code
+        versionName = Versioning.name
+        archivesName = "${rootProject.name}-${versionName}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -21,9 +25,31 @@ android {
         }
     }
 
+    signingConfigs {
+        named(BuildType.DEBUG.name) {
+            storeFile = rootProject.file("secrets/debug-keystore.jks")
+            storePassword = envOrProp("DEBUG_KEYSTORE_PASSWORD")
+            keyAlias = "debug"
+            keyPassword = envOrProp("DEBUG_KEY_PASSWORD")
+        }
+        register(BuildType.RELEASE.name) {
+            storeFile = rootProject.file("secrets/release-keystore.jks")
+            storePassword = envOrProp("RELEASE_KEYSTORE_PASSWORD")
+            keyAlias = "release"
+            keyPassword = envOrProp("RELEASE_KEY_PASSWORD")
+        }
+    }
     buildTypes {
-        release {
-            isMinifyEnabled = false
+        named(BuildType.DEBUG.name) {
+            signingConfig = signingConfigs.getByName(BuildType.DEBUG.name)
+            isDebuggable = true
+        }
+        named(BuildType.RELEASE.name) {
+            if (rootProject.file("secrets/release-keystore.jks").exists()) {
+                signingConfig = signingConfigs.getByName(BuildType.RELEASE.name)
+            }
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
