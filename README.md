@@ -3,8 +3,8 @@
 ![Kotlin](https://img.shields.io/badge/Kotlin-646464?&style=flat&logo=kotlin&logoColor=red-771e9d)
 [![MinSDK](https://img.shields.io/badge/minSDK-23-blue?style=flat&logo=android)](https://developer.android.com/studio/)
 [![Material You](https://img.shields.io/badge/Material_You-3-brightgreen?style=flat&logo=material-design)](https://material.io/)
-[![Android CI / Publish Snapshot](https://github.com/georgegiosue/fisesms/actions/workflows/publish-snapshot.yml/badge.svg)](https://github.com/georgegiosue/fisesms/actions/workflows/publish-snapshot.yml)
-[![Android CI / Publish Release](https://github.com/georgegiosue/fisesms/actions/workflows/publish-release.yml/badge.svg)](https://github.com/georgegiosue/fisesms/actions/workflows/publish-release.yml)
+[![Android CI / Publish Snapshot](https://github.com/georgegiosue/fisesms/actions/workflows/publish-snapshot.yml/badge.svg?branch=master)](https://github.com/georgegiosue/fisesms/actions/workflows/publish-snapshot.yml)
+[![Android CI / Publish Release](https://github.com/georgegiosue/fisesms/actions/workflows/publish-release.yml/badge.svg?branch=master)](https://github.com/georgegiosue/fisesms/actions/workflows/publish-release.yml)
 
 ## Available in 
 
