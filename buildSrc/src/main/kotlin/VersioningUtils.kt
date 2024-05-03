@@ -2,14 +2,18 @@ import org.gradle.api.Project
 import java.io.FileInputStream
 import java.util.Properties
 
-fun Project.envOrProp(name: String): String{
-    return env(name) ?: loadProperties().getProperty(name)
-}
+fun Project.envOrProp(name: String): String? = env(name) ?: loadProperties().getProperty(name)
 
-fun env(name: String, default: String? = null): String? = System.getenv(name) ?: default
+fun env(name: String): String? = System.getenv(name)
 
 fun Project.loadProperties(): Properties {
     val properties = Properties()
-    properties.load(FileInputStream(rootProject.file("local.properties")))
+
+    val localPropertiesFile = rootProject.file("local.properties")
+
+    if (!localPropertiesFile.exists()) return properties
+
+    properties.load(FileInputStream(localPropertiesFile))
+
     return properties
 }
