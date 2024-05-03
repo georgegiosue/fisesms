@@ -1,5 +1,6 @@
 package xyz.ggeorge.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -105,6 +106,7 @@ fun FormFiseComponent(
 
         FilledTonalButton(
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
             contentPadding = PaddingValues(vertical = 16.dp),
             onClick = {
                 val fise = Fise.ToSend(dni.value, vale.value)

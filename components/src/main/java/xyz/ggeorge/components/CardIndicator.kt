@@ -65,14 +65,14 @@ fun CardIndicator(
             ) {
                 Column {
                     Text(
-                        text = subtitle,
-                        fontWeight = FontWeight.ExtraLight,
-                        fontSize = 12.sp
-                    )
-                    Text(
                         text = title,
                         fontWeight = FontWeight.Medium,
                         fontSize = 16.sp
+                    )
+                    Text(
+                        text = subtitle,
+                        fontWeight = FontWeight.ExtraLight,
+                        fontSize = 12.sp
                     )
                 }
 
