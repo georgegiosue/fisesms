@@ -10,7 +10,7 @@ import xyz.ggeorge.fisesms.interactors.abstraction.ISMSManager
 class SMSManager : ISMSManager {
     override fun checkBefore(sms: SMS): Boolean {
 
-        if (sms.phone != Fise.SERVICE_PHONE_NUMBER) throw Exception("El número de teléfono no es el correcto")
+        if (!sms.passSms()) throw Exception("El número de teléfono no es el correcto")
 
         return sms.body.length == Fise.ToSend.STANDARD_PROCESSED_LENGTH || sms.body.length == Fise.BALANCE.length
     }
