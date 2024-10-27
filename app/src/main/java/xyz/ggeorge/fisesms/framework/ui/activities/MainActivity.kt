@@ -33,7 +33,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import xyz.ggeorge.fisesms.data.database.AppDatabase
 import xyz.ggeorge.fisesms.framework.ui.lib.RequestCameraAndSMSPermissions
-import xyz.ggeorge.fisesms.framework.ui.navigation.screens.NavScreen
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.process.Process
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.process.ProcessScreen
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.settings.Settings
@@ -155,19 +154,13 @@ fun ActivityContent(viewModel: FiseViewModel) {
             startDestination = Process
         ) {
             composable<Process> {
-                NavScreen(title = "Procesar") {
-                    ProcessScreen(vm = viewModel)
-                }
+                ProcessScreen(vm = viewModel)
             }
             composable<Transactions> {
-                NavScreen(title = "Transacciones") {
-                    TransactionsScreen(vm = viewModel)
-                }
+                TransactionsScreen(vm = viewModel)
             }
             composable<Settings> {
-                NavScreen(title = "Configuración") {
-                    SettingsScreen()
-                }
+                SettingsScreen()
             }
         }
     }
