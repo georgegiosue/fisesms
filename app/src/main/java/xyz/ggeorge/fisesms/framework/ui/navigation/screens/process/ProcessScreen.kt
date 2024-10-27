@@ -145,7 +145,7 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
                 when (fise.value.state) {
                     FiseState.PROCESSED -> {
 
-                        val fiseProcessed = fise as Fise.Processed
+                        val fiseProcessed = fise.value as Fise.Processed
 
                         AlertDialog(
                             title = "¡Vale Procesado Exitosamente!",
@@ -156,7 +156,7 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
 
                     FiseState.PREVIOUSLY_PROCESSED -> {
 
-                        val fiseWasProcessed = fise as Fise.PreviouslyProcessed
+                        val fiseWasProcessed = fise.value as Fise.PreviouslyProcessed
 
                         AlertDialog(
                             title = "¡Vale Procesado anteriormente!",
