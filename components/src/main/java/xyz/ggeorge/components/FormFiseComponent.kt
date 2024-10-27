@@ -1,6 +1,5 @@
 package xyz.ggeorge.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -63,13 +62,16 @@ fun FormFiseComponent(
                         imageVector = Icons.Filled.Clear,
                         contentDescription = "Clear",
 
-                    )
+                        )
                 }
             }
         },
-        onValueChange = { dni.value = it},
+        onValueChange = { dni.value = it },
         label = { Text("DNI") },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number)
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Number
+        )
     )
 
     Spacer(modifier = Modifier.padding(top = 4.dp))
@@ -97,7 +99,10 @@ fun FormFiseComponent(
         onValueChange = { vale.value = it },
         label = { Text("Vale") },
         supportingText = { Text("Formato: 05-04-23-123456-1") },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number)
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Number
+        )
     )
 
     Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -112,11 +117,11 @@ fun FormFiseComponent(
                 val fise = Fise.ToSend(dni.value, vale.value)
                 onSubmit(coroutine, fise)
             }
-        ){
+        ) {
             Text(
                 text = "Enviar",
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontSize = 20.sp
             )
         }
     }

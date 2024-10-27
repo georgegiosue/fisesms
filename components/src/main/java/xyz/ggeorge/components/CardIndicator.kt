@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.sp
 fun CardIndicator(
     modifier: Modifier = Modifier,
     title: String,
-    subtitle: String,
     icon: @Composable () -> Unit,
     data: String,
     onSuspense: Boolean = false,
@@ -40,6 +39,27 @@ fun CardIndicator(
         border = BorderStroke(color = Color.Transparent, width = 0.dp)
     ) {
         Column(modifier = Modifier.padding(4.dp)) {
+            Row(
+                Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = title,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 18.sp
+                    )
+                }
+
+                IconButton(
+                    modifier = Modifier.clip(CircleShape), onClick = onClick
+
+                ) {
+                    icon()
+                }
+            }
 
             if (data.isNotEmpty() || onSuspense) {
                 if (onSuspense) {
@@ -54,34 +74,6 @@ fun CardIndicator(
                     )
                 }
 
-            }
-
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = title,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = subtitle,
-                        fontWeight = FontWeight.ExtraLight,
-                        fontSize = 12.sp
-                    )
-                }
-
-                IconButton(
-                    modifier = Modifier.clip(CircleShape), onClick = onClick
-
-                ) {
-                    icon()
-                }
             }
         }
     }

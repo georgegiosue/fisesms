@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import xyz.ggeorge.components.AlertDialog
-import xyz.ggeorge.components.AnimatedTypingText
+import xyz.ggeorge.components.AnimatedFadeInText
 import xyz.ggeorge.components.CardIndicator
 import xyz.ggeorge.components.FormFiseComponent
 import xyz.ggeorge.core.domain.Fise
@@ -69,17 +69,16 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
         ) {
 
             CardIndicator(
-                title = "Saldo",
-                subtitle = "Contable",
+                title = "Saldo contable",
                 icon = {
                     Icon(Icons.Rounded.Refresh, contentDescription = "forward")
                 },
                 data = balance.value,
                 onSuspense = balanceState.value == BalanceState.CHECKING_BALANCE,
                 fallback = {
-                    AnimatedTypingText(
+                    AnimatedFadeInText(
                         text = "Consultando...",
-                        fontSize = 20.sp,
+                        fontSize = 16.sp,
                         maxRepeatCount = 99,
                         modifier = Modifier
                             .padding(top = 8.dp, bottom = 4.dp)
@@ -131,7 +130,7 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
 
             ProcessState.PROCESSING_COUPON -> {
 
-                AnimatedTypingText(
+                AnimatedFadeInText(
                     text = "Procesando...",
                     fontSize = 20.sp,
                     maxRepeatCount = 99,
