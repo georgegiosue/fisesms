@@ -13,6 +13,7 @@ import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -52,6 +53,13 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
     val fiseWasProcessedColor =
         if (isDark) FiseWasProcessedColorDark else FiseWasProcessedColorLight
 
+    val state = vm.processState.collectAsState()
+    val fise = vm.fise.collectAsState()
+    val lastFiseSent = vm.lastFiseSent.collectAsState()
+    val balance = vm.balance.collectAsState()
+    val balanceState = vm.balanceState.collectAsState()
+    val fiseError = vm.fiseError.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -66,8 +74,8 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
                 icon = {
                     Icon(Icons.Rounded.Refresh, contentDescription = "forward")
                 },
-                data = vm.balance.value,
-                onSuspense = vm.balanceState.value == BalanceState.CHECKING_BALANCE,
+                data = balance.value,
+                onSuspense = balanceState.value == BalanceState.CHECKING_BALANCE,
                 fallback = {
                     AnimatedTypingText(
                         text = "Consultando...",
@@ -113,8 +121,7 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
 
         Spacer(modifier = Modifier.padding(top = 16.dp))
 
-
-        when (vm.processState.value) {
+        when (state.value) {
             ProcessState.INITIAL -> {
                 Text(
                     modifier = Modifier.align(CenterHorizontally),
@@ -136,9 +143,7 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
 
             ProcessState.COUPON_RECEIVED -> {
 
-                val fise: Fise = vm.fise.value
-
-                when (fise.state) {
+                when (fise.value.state) {
                     FiseState.PROCESSED -> {
 
                         val fiseProcessed = fise as Fise.Processed
@@ -156,7 +161,7 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
 
                         AlertDialog(
                             title = "¡Vale Procesado anteriormente!",
-                            timer = "Vale: ${vm.lastFiseSent.value!!.code} \n Procesado por: ${fiseWasProcessed.agentDNI}",
+                            timer = "Vale: ${lastFiseSent.value!!.code} \n Procesado por: ${fiseWasProcessed.agentDNI}",
                             color = fiseWasProcessedColor
                         )
                     }
@@ -185,7 +190,7 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
 
                 AlertDialog(
                     title = "¡ERROR al procesar el VALE FISE!",
-                    timer = vm.fiseError.value.message,
+                    timer = fiseError.value.message,
                     color = fiseWrongColor
                 )
             }
