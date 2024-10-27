@@ -5,6 +5,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
@@ -57,11 +58,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
     buildFeatures {
         compose = true
@@ -81,15 +82,18 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":components"))
 
-    implementation (libs.core.ktx)
-    implementation (libs.activity.compose)
-    implementation (libs.bundles.compose)
-    implementation (libs.bundles.lifecycle)
-    implementation (libs.bundles.accompanist)
-    implementation (libs.kotlin.reflection)
-    implementation (libs.material3)
+    implementation(libs.core.ktx)
+    implementation(libs.activity.compose)
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.lifecycle)
+    implementation(libs.bundles.accompanist)
+    implementation(libs.kotlin.reflection)
+    implementation(libs.kotlin.serialization)
+    implementation(libs.material3)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.navigation.compose)
 
     annotationProcessor(libs.room.compiler)
 

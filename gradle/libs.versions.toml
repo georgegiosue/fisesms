@@ -1,21 +1,23 @@
 [versions]
 kotlin = "1.9.22"
-compose = "1.6.0"
-compose-material = "1.6.0"
-lifecycle = "2.7.0"
+compose = "1.7.4"
+compose-material = "1.7.4"
+lifecycle = "2.8.6"
 accompanist = "0.27.1"
-androidGradlePlugin = "8.2.2"
+androidGradlePlugin = "8.7.1"
 junit = "4.13.2"
 room = "2.6.1"
 ksp = "1.9.22-1.0.17"
+navigationCompose = "2.8.3"
 
 [libraries]
 # Core
-core-ktx = { module = "androidx.core:core-ktx", version = "1.12.0" }
+core-ktx = { module = "androidx.core:core-ktx", version = "1.13.1" }
 
 # Kotlin
 
 kotlin-reflection = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.6.3" }
 
 # Compose
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
@@ -25,15 +27,15 @@ compose-icons = { module = "androidx.compose.material:material-icons-extended", 
 compose-bom = { module = "androidx.compose:compose-bom", version = "2024.01.00" }
 
 # Material 3
-material3 = { module = "androidx.compose.material3:material3", version = "1.1.2"}
+material3 = { module = "androidx.compose.material3:material3", version = "1.1.2" }
 
 #life cycle
 
-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle"}
-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle"}
-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle"}
-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle"}
-lifecycle-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle"}
+lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
+lifecycle-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
 
 #activity
 
@@ -41,9 +43,9 @@ activity-compose = { module = "androidx.activity:activity-compose", version = "1
 
 #accompanist
 
-accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist"}
-accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist"}
-
+accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
+accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 # Room
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
@@ -58,13 +60,14 @@ compose-bom-test = { module = "androidx.compose:compose-bom", version = "2024.01
 
 # Annotation processors
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [bundles]
 # Bundles/groups of libraries
