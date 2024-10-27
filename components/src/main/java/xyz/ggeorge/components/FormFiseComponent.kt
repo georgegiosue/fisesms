@@ -1,5 +1,8 @@
 package xyz.ggeorge.components
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,6 +45,10 @@ fun FormFiseComponent(
     val vale = remember {
         mutableStateOf("")
     }
+
+    val focusManager = LocalFocusManager.current
+
+    val ctx = LocalContext.current
 
     Text(
         text = "Datos",
@@ -116,6 +125,9 @@ fun FormFiseComponent(
             onClick = {
                 val fise = Fise.ToSend(dni.value, vale.value)
                 onSubmit(coroutine, fise)
+
+                hideKeyboard(ctx)
+                focusManager.clearFocus()
             }
         ) {
             Text(
@@ -125,4 +137,11 @@ fun FormFiseComponent(
             )
         }
     }
+
+}
+
+@SuppressLint("ServiceCast")
+fun hideKeyboard(ctx: Context) {
+    val imm = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(null, 0)
 }
