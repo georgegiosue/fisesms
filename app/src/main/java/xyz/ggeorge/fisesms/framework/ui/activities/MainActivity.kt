@@ -40,6 +40,7 @@ import xyz.ggeorge.fisesms.framework.ui.navigation.screens.settings.SettingsScre
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.transactions.Transactions
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.transactions.TransactionsScreen
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.FiseViewModel
+import xyz.ggeorge.fisesms.framework.ui.viewmodels.SettingsViewModel
 import xyz.ggeorge.fisesms.interactors.implementation.SmsReceiver
 import xyz.ggeorge.theme.FisesmsTheme
 
@@ -66,6 +67,8 @@ class MainActivity : ComponentActivity() {
         }
     )
 
+    private val settingsViewModel by viewModels<SettingsViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -74,7 +77,7 @@ class MainActivity : ComponentActivity() {
                     finish()
                 })
 
-                ActivityContent(viewModel)
+                ActivityContent(viewModel, settingsViewModel)
 
                 registerReceiver(smsReceiver, intentFilter)
             }
@@ -89,7 +92,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ActivityContent(viewModel: FiseViewModel) {
+fun ActivityContent(viewModel: FiseViewModel, settingsViewModel: SettingsViewModel) {
     val navController = rememberNavController()
 
     Scaffold(
@@ -160,7 +163,7 @@ fun ActivityContent(viewModel: FiseViewModel) {
                 TransactionsScreen(vm = viewModel)
             }
             composable<Settings> {
-                SettingsScreen()
+                SettingsScreen(viewModel = settingsViewModel)
             }
         }
     }

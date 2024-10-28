@@ -94,6 +94,7 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.accompanist.permissions)
     implementation(libs.navigation.compose)
+    implementation(libs.androidx.datastore)
 
     annotationProcessor(libs.room.compiler)
 
