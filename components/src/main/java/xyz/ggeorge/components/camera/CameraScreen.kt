@@ -11,6 +11,7 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +47,7 @@ fun CameraScreen(
 
     val cameraExecutor = Executors.newSingleThreadExecutor()
 
-    AndroidView(modifier = modifier, factory = { context ->
+    AndroidView(modifier = Modifier.fillMaxSize(), factory = { context ->
         val preview = Preview.Builder().build()
         val previewView = PreviewView(context)
         val selector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -84,7 +85,7 @@ fun CameraScreen(
                 imageCapture,
                 imageAnalyzer
             )
-            
+
             onCamera(camera)
         } catch (e: Exception) {
             e.printStackTrace()

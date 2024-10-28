@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.SettingsViewModel
@@ -76,7 +77,11 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(0.6f),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.AirlineStops,
                             contentDescription = "Alias Icono"
@@ -84,9 +89,11 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                         Text(text = "Alias", fontSize = 18.sp)
                     }
                     Text(
+                        modifier = Modifier.fillMaxWidth(0.4f),
                         text = alias,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.End
                     )
 
                     if (openAliasEditor) {
@@ -137,7 +144,11 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(0.6f),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Tag,
                             contentDescription = "Numero de servicio Icono"
@@ -146,9 +157,11 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                     }
 
                     Text(
+                        modifier = Modifier.fillMaxWidth(0.4f),
                         text = serviceNumber,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.End
                     )
 
                     if (openServiceNumberEditor) {
@@ -203,7 +216,11 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(0.6f),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Visibility,
                             contentDescription = "Vision en tiempo real Icono"
@@ -211,6 +228,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                         Text(text = "Vision en tiempo real", fontSize = 18.sp)
                     }
                     Switch(
+                        modifier = Modifier.fillMaxWidth(0.4f),
                         checked = realtimeVisionFeatureEnabled,
                         onCheckedChange = {
                             viewModel.toggleRealtimeVisionFeature(it)
@@ -235,7 +253,11 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(0.6f),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Fingerprint,
                             contentDescription = "Solicitar huella al iniciar Icono"
@@ -243,6 +265,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                         Text(text = "Solicitar huella al iniciar", fontSize = 18.sp)
                     }
                     Switch(
+                        modifier = Modifier.fillMaxWidth(0.4f),
                         enabled = false,
                         checked = checkedAuthFeature,
                         onCheckedChange = {
