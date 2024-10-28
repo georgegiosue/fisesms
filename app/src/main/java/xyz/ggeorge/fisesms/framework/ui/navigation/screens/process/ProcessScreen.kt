@@ -30,12 +30,14 @@ import xyz.ggeorge.components.AlertDialog
 import xyz.ggeorge.components.AnimatedFadeInText
 import xyz.ggeorge.components.CardIndicator
 import xyz.ggeorge.components.FormFiseComponent
+import xyz.ggeorge.components.camera.RealtimeVision
 import xyz.ggeorge.core.domain.Fise
 import xyz.ggeorge.core.domain.events.AppEvent
 import xyz.ggeorge.core.domain.state.BalanceState
 import xyz.ggeorge.core.domain.state.FiseState
 import xyz.ggeorge.core.domain.state.ProcessState
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.FiseViewModel
+import xyz.ggeorge.fisesms.framework.ui.viewmodels.SettingsViewModel
 import xyz.ggeorge.theme.FiseSuccessfullColorDark
 import xyz.ggeorge.theme.FiseSuccessfullColorLight
 import xyz.ggeorge.theme.FiseWasProcessedColorDark
@@ -44,7 +46,11 @@ import xyz.ggeorge.theme.FiseWrongColorDark
 import xyz.ggeorge.theme.FiseWrongColorLight
 
 @Composable
-fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
+fun ProcessScreen(
+    vm: FiseViewModel,
+    isDark: Boolean = isSystemInDarkTheme(),
+    settingsViewModel: SettingsViewModel
+) {
 
     val coroutine = rememberCoroutineScope()
 
@@ -61,6 +67,9 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
     val balance = vm.balance.collectAsState()
     val balanceState = vm.balanceState.collectAsState()
     val fiseError = vm.fiseError.collectAsState()
+
+    val realtimeVisionFeatureEnabled =
+        settingsViewModel.realtimeVisionFeatureEnabled.collectAsState(initial = false)
 
     val scroll = rememberScrollState()
 
@@ -108,20 +117,24 @@ fun ProcessScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
 
         Spacer(modifier = Modifier.padding(top = 16.dp))
 
-        FormFiseComponent(
-            coroutine,
-            onSubmit = { coroutineScope: CoroutineScope, fise ->
+        if (realtimeVisionFeatureEnabled.value) {
+            RealtimeVision()
+        } else {
+            FormFiseComponent(
+                coroutine,
+                onSubmit = { coroutineScope: CoroutineScope, fise ->
 
-                coroutineScope.launch {
+                    coroutineScope.launch {
 
-                    with(vm) {
+                        with(vm) {
 
-                        setFise(fise)
-                        onEvent(AppEvent.PROCESS_COUPON, ctx)
+                            setFise(fise)
+                            onEvent(AppEvent.PROCESS_COUPON, ctx)
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
 
         Spacer(modifier = Modifier.padding(top = 16.dp))
 

@@ -47,7 +47,9 @@ dependencies {
     implementation(libs.bundles.accompanist)
     implementation(libs.material3)
     implementation(platform(libs.compose.bom))
-
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.view)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.android)

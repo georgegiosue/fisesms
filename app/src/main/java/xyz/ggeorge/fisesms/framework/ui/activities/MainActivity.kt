@@ -152,12 +152,13 @@ fun ActivityContent(viewModel: FiseViewModel, settingsViewModel: SettingsViewMod
     ) { innerPadding ->
 
         NavHost(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier
+                .padding(innerPadding),
             navController = navController,
             startDestination = Process
         ) {
             composable<Process> {
-                ProcessScreen(vm = viewModel)
+                ProcessScreen(vm = viewModel, settingsViewModel = settingsViewModel)
             }
             composable<Transactions> {
                 TransactionsScreen(vm = viewModel)
