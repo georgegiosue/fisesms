@@ -1,6 +1,8 @@
 package xyz.ggeorge.components
 
-import androidx.compose.foundation.border
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -42,6 +46,10 @@ fun FormFiseComponent(
         mutableStateOf("")
     }
 
+    val focusManager = LocalFocusManager.current
+
+    val ctx = LocalContext.current
+
     Text(
         text = "Datos",
         fontWeight = FontWeight.Bold,
@@ -63,13 +71,16 @@ fun FormFiseComponent(
                         imageVector = Icons.Filled.Clear,
                         contentDescription = "Clear",
 
-                    )
+                        )
                 }
             }
         },
-        onValueChange = { dni.value = it},
+        onValueChange = { dni.value = it },
         label = { Text("DNI") },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number)
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Number
+        )
     )
 
     Spacer(modifier = Modifier.padding(top = 4.dp))
@@ -97,7 +108,10 @@ fun FormFiseComponent(
         onValueChange = { vale.value = it },
         label = { Text("Vale") },
         supportingText = { Text("Formato: 05-04-23-123456-1") },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number)
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Number
+        )
     )
 
     Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -111,13 +125,23 @@ fun FormFiseComponent(
             onClick = {
                 val fise = Fise.ToSend(dni.value, vale.value)
                 onSubmit(coroutine, fise)
+
+                hideKeyboard(ctx)
+                focusManager.clearFocus()
             }
-        ){
+        ) {
             Text(
                 text = "Enviar",
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontSize = 20.sp
             )
         }
     }
+
+}
+
+@SuppressLint("ServiceCast")
+fun hideKeyboard(ctx: Context) {
+    val imm = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(null, 0)
 }

@@ -5,40 +5,42 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ClearAll
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.LineStyle
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
-import xyz.ggeorge.components.Screen
-import xyz.ggeorge.components.TabBar
 import xyz.ggeorge.fisesms.data.database.AppDatabase
-import xyz.ggeorge.fisesms.framework.ui.lib.PERMISSIONS
-import xyz.ggeorge.fisesms.framework.ui.lib.requiredPermissions
-import xyz.ggeorge.fisesms.framework.ui.navigation.screens.ProcessScreen
-import xyz.ggeorge.fisesms.framework.ui.navigation.screens.RequiredPermissionsPage
-import xyz.ggeorge.fisesms.framework.ui.navigation.screens.TransactionsScreen
+import xyz.ggeorge.fisesms.framework.ui.lib.RequestCameraAndSMSPermissions
+import xyz.ggeorge.fisesms.framework.ui.navigation.screens.process.Process
+import xyz.ggeorge.fisesms.framework.ui.navigation.screens.process.ProcessScreen
+import xyz.ggeorge.fisesms.framework.ui.navigation.screens.settings.Settings
+import xyz.ggeorge.fisesms.framework.ui.navigation.screens.settings.SettingsScreen
+import xyz.ggeorge.fisesms.framework.ui.navigation.screens.transactions.Transactions
+import xyz.ggeorge.fisesms.framework.ui.navigation.screens.transactions.TransactionsScreen
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.FiseViewModel
+import xyz.ggeorge.fisesms.framework.ui.viewmodels.SettingsViewModel
 import xyz.ggeorge.fisesms.interactors.implementation.SmsReceiver
 import xyz.ggeorge.theme.FisesmsTheme
 
@@ -65,71 +67,19 @@ class MainActivity : ComponentActivity() {
         }
     )
 
+    private val settingsViewModel by viewModels<SettingsViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContent {
+            FisesmsTheme {
+                RequestCameraAndSMSPermissions(onDismissRequest = {
+                    finish()
+                })
 
-        requiredPermissions(listOf(PERMISSIONS.SEND_SMS, PERMISSIONS.RECEIVE_SMS)) { isGranted ->
-            if (isGranted) {
+                ActivityContent(viewModel, settingsViewModel)
 
-                setContent {
-
-                    FisesmsTheme {
-                        ActivityContent(viewModel)
-                    }
-
-                    registerReceiver(smsReceiver, intentFilter)
-                }
-
-
-            } else {
-
-                setContent {
-                    FisesmsTheme {
-                        RequiredPermissionsPage()
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    private fun ActivityContent(viewModel: FiseViewModel) {
-
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-
-                TabBar(
-                    header = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "Fise",
-                                style = TextStyle(
-                                    fontSize = 39.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "sms")
-                        }
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                Icons.Outlined.ClearAll,
-                                contentDescription = "Settings"
-                            )
-                        }
-                    },
-                    screens = listOf(
-                        Screen("Procesar") { ProcessScreen(vm = viewModel) },
-                        Screen("Transacciones") { TransactionsScreen(vm = viewModel) }
-                    )
-                )
+                registerReceiver(smsReceiver, intentFilter)
             }
         }
     }
@@ -137,5 +87,85 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(smsReceiver)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ActivityContent(viewModel: FiseViewModel, settingsViewModel: SettingsViewModel) {
+    val navController = rememberNavController()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+
+                title = {
+                    Text(
+                        text = "Fise SMS",
+                        style = TextStyle(fontSize = 36.sp, fontWeight = FontWeight.Bold)
+                    )
+                }
+            )
+        },
+        bottomBar = {
+            BottomAppBar(
+                actions = {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        IconButton(
+                            onClick = {
+                                navController.navigate(Process)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.ChatBubbleOutline,
+                                contentDescription = "Procesar"
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {
+                                navController.navigate(Transactions)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.LineStyle,
+                                contentDescription = "Transacciones"
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                navController.navigate(Settings)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Settings,
+                                contentDescription = "Settings"
+                            )
+                        }
+                    }
+                }
+            )
+        },
+    ) { innerPadding ->
+
+        NavHost(
+            modifier = Modifier
+                .padding(innerPadding),
+            navController = navController,
+            startDestination = Process
+        ) {
+            composable<Process> {
+                ProcessScreen(vm = viewModel, settingsViewModel = settingsViewModel)
+            }
+            composable<Transactions> {
+                TransactionsScreen(vm = viewModel)
+            }
+            composable<Settings> {
+                SettingsScreen(viewModel = settingsViewModel)
+            }
+        }
     }
 }
