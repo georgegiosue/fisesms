@@ -89,7 +89,7 @@ jobs:
 
   android_tests:
     name: Android Test
-    runs-on: macos-12
+    runs-on: macos-14
     needs: [ build ]
     env:
       DEBUG_ENCRYPTION_KEY: ${{ secrets.DEBUG_ENCRYPTION_KEY }}
