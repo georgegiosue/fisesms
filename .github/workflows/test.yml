@@ -35,6 +35,8 @@ jobs:
 
   android_tests:
     name: Android Test
+    # https://github.com/ReactiveCircus/android-emulator-runner/issues/404
+    if: false
     runs-on: macos-14
     env:
       DEBUG_ENCRYPTION_KEY: ${{ secrets.DEBUG_ENCRYPTION_KEY }}
