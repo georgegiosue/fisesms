@@ -121,7 +121,7 @@ jobs:
       - name: Run Instrumented tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: 26
           script: ./gradlew connectedDebugAndroidTest
 
       - name: Cleanup secrets
