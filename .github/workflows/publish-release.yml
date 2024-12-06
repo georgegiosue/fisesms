@@ -134,6 +134,7 @@ jobs:
   publish:
     name: Publish
     runs-on: ubuntu-latest
+    environment: "Production"
     needs: [ unit_tests ]
     permissions:
       contents: write

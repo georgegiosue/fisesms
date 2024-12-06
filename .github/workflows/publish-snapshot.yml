@@ -6,6 +6,8 @@ on:
       - master
     paths-ignore:
       - '**/*.md'
+      - '**/*.yml'
+      - '**/*.yaml'
 
 env:
   ANDROID_ENV: "STAGING"
@@ -14,7 +16,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    permissions:
+    environment: "Snapshot"
+    permissions: 
       contents: write
     env:
       DEBUG_ENCRYPTION_KEY: ${{ secrets.DEBUG_ENCRYPTION_KEY }}
@@ -63,6 +66,7 @@ jobs:
           echo "COMMIT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Upload Artifacts
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.REPOSITORY }}-${{ env.VERSION }}-snapshot-(${{ env.COMMIT_SHA }})

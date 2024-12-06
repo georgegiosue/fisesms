@@ -5,6 +5,8 @@ on:
       - "*"
     paths-ignore:
       - '**/*.md'
+      - '**/*.yml'
+      - '**/*.yaml'
 
 jobs:
   unit_tests:
