@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId = "xyz.ggeorge.fisesms"
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
         versionCode = Versioning.code
         versionName = Versioning.name
         archivesName = "${rootProject.name}-${versionName}"
