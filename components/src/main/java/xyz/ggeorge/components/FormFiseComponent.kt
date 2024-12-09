@@ -35,15 +35,25 @@ import xyz.ggeorge.core.domain.Fise
 @Composable
 fun FormFiseComponent(
     coroutine: CoroutineScope,
+    onAIResponse: Boolean,
+    aiCouponValue: String,
+    aiDniValue: String,
+    postAISetValues: () -> Unit,
     onSubmit: (CoroutineScope, Fise.ToSend) -> Unit
 ) {
 
-    val dni = remember {
+    var dni = remember {
         mutableStateOf("")
     }
 
-    val vale = remember {
+    var vale = remember {
         mutableStateOf("")
+    }
+
+    if (onAIResponse) {
+        dni.value = aiDniValue
+        vale.value = aiCouponValue
+        postAISetValues()
     }
 
     val focusManager = LocalFocusManager.current

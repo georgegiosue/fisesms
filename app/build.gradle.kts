@@ -95,6 +95,9 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.navigation.compose)
     implementation(libs.androidx.datastore)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter)
+    implementation(libs.retrofit.okhttp)
 
     annotationProcessor(libs.room.compiler)
 

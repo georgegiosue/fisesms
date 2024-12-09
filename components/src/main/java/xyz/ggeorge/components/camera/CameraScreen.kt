@@ -8,20 +8,29 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.FileProvider
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import java.io.File
 import java.util.concurrent.Executors
 
 @SuppressLint("RestrictedApi")
@@ -33,8 +42,8 @@ fun CameraScreen(
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     imageCaptureBuilder: ImageCapture.Builder = ImageCapture.Builder(),
     onCamera: (camera: Camera?) -> Unit,
+    onPhotoCaptured: (ByteArray?) -> Unit
 ) {
-
     val cameraProviderFuture = remember {
         ProcessCameraProvider.getInstance(contextCurrent)
     }
@@ -47,49 +56,89 @@ fun CameraScreen(
 
     val cameraExecutor = Executors.newSingleThreadExecutor()
 
-    AndroidView(modifier = Modifier.fillMaxSize(), factory = { context ->
-        val preview = Preview.Builder().build()
-        val previewView = PreviewView(context)
-        val selector = CameraSelector.DEFAULT_BACK_CAMERA
-        val currentImageCapture = imageCaptureBuilder
-            .setCameraSelector(selector)
-            .build()
+    // Crear un Uri para almacenar la imagen capturada
+    val outputDirectory = contextCurrent.cacheDir
+    val photoFile = File(outputDirectory, "${System.currentTimeMillis()}.jpg")
+    val photoUri = FileProvider.getUriForFile(
+        contextCurrent,
+        "${contextCurrent.packageName}.provider",
+        photoFile
+    )
 
-        imageCapture = currentImageCapture
+    Box(modifier = modifier.fillMaxSize()) {
+        // Vista de cámara
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { context ->
+                val preview = Preview.Builder().build()
+                val previewView = PreviewView(context)
+                val selector = CameraSelector.DEFAULT_BACK_CAMERA
+                val currentImageCapture = imageCaptureBuilder
+                    .setCameraSelector(selector)
+                    .build()
 
-        preview.setSurfaceProvider(previewView.surfaceProvider)
+                imageCapture = currentImageCapture
 
-        imageAnalyzer = ImageAnalysis.Builder()
-            // This sets the ideal size for the image to be analyse, CameraX will choose the
-            // the most suitable resolution which may not be exactly the same or hold the same
-            // aspect ratio .setTargetResolution(Size(176, 144))
-            //.setTargetResolution(Size(128, 128))
-            // How the Image Analyser should pipe in input, 1. every frame but drop no frame, or
-            // 2. go to the latest frame and may drop some frame. The default is 2.
-            // STRATEGY_KEEP_ONLY_LATEST. The following line is optional, kept here for clarity
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .build()
-            .also { analysisUseCase: ImageAnalysis ->
-                analysisUseCase.setAnalyzer(
-                    cameraExecutor,
-                    InferenceCouponFiseAnalyzer(ctx = context)
-                )
+                preview.setSurfaceProvider(previewView.surfaceProvider)
+
+                imageAnalyzer = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+                    .also { analysisUseCase: ImageAnalysis ->
+                        analysisUseCase.setAnalyzer(
+                            cameraExecutor,
+                            InferenceCouponFiseAnalyzer(ctx = context)
+                        )
+                    }
+
+                try {
+                    val cameraProvider = cameraProviderFuture.get()
+                    val camera = cameraProvider.bindToLifecycle(
+                        lifecycleOwner,
+                        selector,
+                        preview,
+                        imageCapture,
+                        imageAnalyzer
+                    )
+
+                    onCamera(camera)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                previewView
             }
+        )
 
-        try {
-            val cameraProvider = cameraProviderFuture.get()
-            val camera = cameraProvider.bindToLifecycle(
-                lifecycleOwner,
-                selector,
-                preview,
-                imageCapture,
-                imageAnalyzer
-            )
+        // Botón para tomar una foto
+        Button(
+            onClick = {
+                imageCapture?.takePicture(
+                    ImageCapture.OutputFileOptions.Builder(photoFile).build(),
+                    cameraExecutor,
+                    object : ImageCapture.OnImageSavedCallback {
+                        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                            try {
+                                // Leer el archivo y convertirlo a ByteArray
+                                val photoBytes = photoFile.readBytes()
+                                onPhotoCaptured(photoBytes) // Retornar los bytes de la imagen
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                onPhotoCaptured(null) // Enviar null en caso de error
+                            }
+                        }
 
-            onCamera(camera)
-        } catch (e: Exception) {
-            e.printStackTrace()
+                        override fun onError(exception: ImageCaptureException) {
+                            exception.printStackTrace()
+                            onPhotoCaptured(null) // Enviar null en caso de error
+                        }
+                    }
+                )
+            },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        ) {
+            Text(text = "Capturar")
         }
-        previewView
-    })
+    }
 }

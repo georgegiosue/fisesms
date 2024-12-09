@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun RealtimeVision(modifier: Modifier = Modifier) {
+fun RealtimeVision(modifier: Modifier = Modifier, onPhotoCaptured: (ByteArray?) -> Unit) {
 
     var isFlashEnabled by remember { mutableStateOf(false) }
     var zoomLevel by remember { mutableStateOf(ZoomLevel.X1) }
@@ -39,18 +39,10 @@ fun RealtimeVision(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CameraScreen { camera ->
+            CameraScreen(onCamera = { camera ->
                 camera?.cameraControl?.setZoomRatio(zoomLevel.factor)
                 camera?.cameraControl?.enableTorch(isFlashEnabled)
-            }
-            CameraUIControls(
-                isFlashEnabled = isFlashEnabled,
-                zoom = zoomLevel
-            ) { isFlashEnabledControl: Boolean, zoomLevelControl: ZoomLevel ->
-
-                isFlashEnabled = isFlashEnabledControl
-                zoomLevel = zoomLevelControl
-            }
+            }, onPhotoCaptured = onPhotoCaptured)
         }
     }
 }

@@ -1,5 +1,6 @@
 package xyz.ggeorge.fisesms.framework.ui.navigation.screens.process
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -67,6 +68,9 @@ fun ProcessScreen(
     val balance = vm.balance.collectAsState()
     val balanceState = vm.balanceState.collectAsState()
     val fiseError = vm.fiseError.collectAsState()
+    val aiCouponValue = vm.aiCouponValue.collectAsState()
+    val aiDniValue = vm.aiDniValue.collectAsState()
+    val onAIResponse = vm.onAIResult.collectAsState()
 
     val realtimeVisionFeatureEnabled =
         settingsViewModel.realtimeVisionFeatureEnabled.collectAsState(initial = false)
@@ -117,24 +121,34 @@ fun ProcessScreen(
 
         Spacer(modifier = Modifier.padding(top = 16.dp))
 
-        if (realtimeVisionFeatureEnabled.value) {
-            RealtimeVision()
-        } else {
-            FormFiseComponent(
-                coroutine,
-                onSubmit = { coroutineScope: CoroutineScope, fise ->
+        AnimatedVisibility(realtimeVisionFeatureEnabled.value) {
+            RealtimeVision { imageBytes: ByteArray? ->
+                coroutine.launch {
+                    vm.setAIImageBytes(imageBytes)
+                    vm.onEvent(AppEvent.AI_PROCESS, ctx)
+                }
 
-                    coroutineScope.launch {
+            }
+        }
 
-                        with(vm) {
+        FormFiseComponent(
+            coroutine,
+            onAIResponse.value,
+            aiCouponValue.value,
+            aiDniValue.value,
+            { vm.setOnAIResult(false) },
+            onSubmit = { coroutineScope: CoroutineScope, fise ->
 
-                            setFise(fise)
-                            onEvent(AppEvent.PROCESS_COUPON, ctx)
-                        }
+                coroutineScope.launch {
+
+                    with(vm) {
+
+                        setFise(fise)
+                        onEvent(AppEvent.PROCESS_COUPON, ctx)
                     }
                 }
-            )
-        }
+            }
+        )
 
         Spacer(modifier = Modifier.padding(top = 16.dp))
 
@@ -215,6 +229,15 @@ fun ProcessScreen(
 
                 AlertDialog(
                     title = "¡ERROR al procesar el VALE FISE!",
+                    timer = fiseError.value.message,
+                    color = fiseWrongColor
+                )
+            }
+
+            ProcessState.ERROR_AI_PROCESS -> {
+
+                AlertDialog(
+                    title = "¡ERROR al procesar la imagen con IA!",
                     timer = fiseError.value.message,
                     color = fiseWrongColor
                 )

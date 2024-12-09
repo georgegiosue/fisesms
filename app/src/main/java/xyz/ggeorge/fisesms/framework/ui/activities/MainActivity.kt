@@ -1,7 +1,11 @@
 package xyz.ggeorge.fisesms.framework.ui.activities
 
+import android.Manifest
+import android.app.Activity
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -25,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
@@ -32,7 +38,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import xyz.ggeorge.fisesms.data.database.AppDatabase
-import xyz.ggeorge.fisesms.framework.ui.lib.RequestCameraAndSMSPermissions
+import xyz.ggeorge.fisesms.framework.ui.lib.RequestPermissions
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.process.Process
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.process.ProcessScreen
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.settings.Settings
@@ -73,9 +79,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FisesmsTheme {
-                RequestCameraAndSMSPermissions(onDismissRequest = {
+                RequestPermissions(onDismissRequest = {
                     finish()
                 })
+
+                checkAndRequestPermissions(this)
 
                 ActivityContent(viewModel, settingsViewModel)
 
@@ -87,6 +95,40 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(smsReceiver)
+    }
+
+    private val REQUEST_CODE_PERMISSIONS = 101
+    private val REQUIRED_PERMISSIONS = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    )
+
+    fun checkAndRequestPermissions(activity: Activity) {
+        if (REQUIRED_PERMISSIONS.any {
+                ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
+            }) {
+            ActivityCompat.requestPermissions(
+                activity,
+                REQUIRED_PERMISSIONS,
+                REQUEST_CODE_PERMISSIONS
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                Toast.makeText(this, "Permisos concedidos", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Permisos necesarios para continuar", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
     }
 }
 

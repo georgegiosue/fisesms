@@ -20,8 +20,10 @@ import xyz.ggeorge.core.domain.exceptions.FiseError
 import xyz.ggeorge.core.domain.state.BalanceState
 import xyz.ggeorge.core.domain.state.FiseState
 import xyz.ggeorge.core.domain.state.ProcessState
+import xyz.ggeorge.fisesms.data.api.uploadImageToApi
 import xyz.ggeorge.fisesms.data.dao.FiseDao
 import xyz.ggeorge.fisesms.data.entities.FiseEntity
+import xyz.ggeorge.fisesms.framework.ui.lib.decodeBase64ToBitmap
 import xyz.ggeorge.fisesms.framework.ui.lib.toast
 import xyz.ggeorge.fisesms.framework.ui.state.CouponsState
 import xyz.ggeorge.fisesms.framework.ui.state.SortType
@@ -37,6 +39,18 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
     val lastFiseSent: StateFlow<Fise.ToSend?> = _lastFiseSent.asStateFlow()
 
     private val _sortType = MutableStateFlow(SortType.PROCESS_TIMESTAMP_DESC)
+
+    private val _aiImageBytes = MutableStateFlow<ByteArray?>(null)
+    val aiImageBytes: StateFlow<ByteArray?> = _aiImageBytes.asStateFlow()
+
+    private val _aiCouponValue = MutableStateFlow("")
+    val aiCouponValue: StateFlow<String> = _aiCouponValue.asStateFlow()
+
+    private val _onAIResult = MutableStateFlow(false)
+    val onAIResult: StateFlow<Boolean> = _onAIResult.asStateFlow()
+
+    private val _aiDniValue = MutableStateFlow("")
+    val aiDniValue: StateFlow<String> = _aiDniValue.asStateFlow()
 
     private val _coupons = _sortType
         .flatMapLatest { sortType ->
@@ -91,6 +105,14 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
     private fun smsToFise(sms: SMS, fiseState: FiseState): Fise {
 
         return Fise.fromSMS(sms, fiseState)
+    }
+
+    fun setAIImageBytes(bytes: ByteArray?) {
+        _aiImageBytes.value = bytes
+    }
+
+    fun setOnAIResult(value: Boolean) {
+        _onAIResult.value = value
     }
 
     private fun determinateState(): FiseState {
@@ -196,6 +218,29 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
                     }
                 }
             }
+
+            AppEvent.AI_PROCESS -> {
+
+                val image = aiImageBytes.value!!
+
+                uploadImageToApi(
+                    image,
+                    onSuccess = { couponRegion, couponCode, dniRegion, dniNumber, processingTime ->
+
+                        val decodedCouponImage = decodeBase64ToBitmap(couponRegion)
+                        val decodedDniImage = decodeBase64ToBitmap(dniRegion)
+
+                        _aiCouponValue.value = couponCode
+                        _aiDniValue.value = dniNumber
+
+                        _onAIResult.value = true
+
+                    },
+                    onError = { errorMessage ->
+
+                        onErrorEvent(ErrorEvent.ON_ERROR_AI_PROCESS, Exception(errorMessage))
+                    })
+            }
         }
     }
 
@@ -217,6 +262,14 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
                     FiseError("${exception.message} | Por favor, verifique el DNI y/o el Codigo del Vale")
 
                 setProcessState(ProcessState.ERROR_PROCESSING_COUPON)
+            }
+
+            ErrorEvent.ON_ERROR_AI_PROCESS -> {
+
+                _fiseError.value =
+                    FiseError("${exception.message} | Ocurrio un error al procesar la imagen")
+
+                setProcessState(ProcessState.ERROR_AI_PROCESS)
             }
         }
     }

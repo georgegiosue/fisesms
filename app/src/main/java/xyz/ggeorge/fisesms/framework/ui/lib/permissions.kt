@@ -17,9 +17,14 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun RequestCameraAndSMSPermissions(onDismissRequest: () -> Unit) {
+fun RequestPermissions(onDismissRequest: () -> Unit) {
     val multiplePermissionsState = rememberMultiplePermissionsState(
-        listOf(PERMISSIONS.CAMERA, PERMISSIONS.SEND_SMS, PERMISSIONS.RECEIVE_SMS)
+        listOf(
+            PERMISSIONS.CAMERA,
+            PERMISSIONS.SEND_SMS,
+            PERMISSIONS.RECEIVE_SMS,
+            PERMISSIONS.INTERNET,
+        )
     )
 
     if (!multiplePermissionsState.allPermissionsGranted) {
@@ -51,7 +56,7 @@ fun RequestCameraAndSMSPermissions(onDismissRequest: () -> Unit) {
             }
         }, title = {
             Text(
-                text = "Permisos de Camara y SMS",
+                text = "Permisos de Camara, SMS e Internet",
                 style = TextStyle(
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
@@ -59,7 +64,7 @@ fun RequestCameraAndSMSPermissions(onDismissRequest: () -> Unit) {
             )
         }, text = {
             Text(
-                text = "Los permisos de la camara, enviar y recibir SMS estan denegados. Por favor, autoriza los permisos para continuar.",
+                text = "Los permisos de la camara, enviar / recibir SMS e Internet estan denegados. Por favor, autoriza los permisos para continuar.",
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Normal
