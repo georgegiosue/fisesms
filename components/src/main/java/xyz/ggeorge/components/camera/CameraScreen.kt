@@ -204,7 +204,8 @@ fun CameraScreen(
                         object : ImageCapture.OnImageSavedCallback {
                             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                                 try {
-                                    onPhotoCaptured(photoFile.absolutePath)
+                                    val compressedFile = compressImage(photoFile)
+                                    onPhotoCaptured(compressedFile?.absolutePath)
                                 } catch (e: Exception) {
                                     e.printStackTrace()
                                     onPhotoCaptured(null)
