@@ -40,8 +40,8 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
     private val _sortType = MutableStateFlow(SortType.PROCESS_TIMESTAMP_DESC)
 
-    private val _aiImageBytes = MutableStateFlow<ByteArray?>(null)
-    val aiImageBytes: StateFlow<ByteArray?> = _aiImageBytes.asStateFlow()
+    private val _aiImagePath = MutableStateFlow<String?>(null)
+    val aiImagePath: StateFlow<String?> = _aiImagePath.asStateFlow()
 
     private val _aiCouponValue = MutableStateFlow("")
     val aiCouponValue: StateFlow<String> = _aiCouponValue.asStateFlow()
@@ -107,8 +107,8 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
         return Fise.fromSMS(sms, fiseState)
     }
 
-    fun setAIImageBytes(bytes: ByteArray?) {
-        _aiImageBytes.value = bytes
+    fun setAIImagePath(imagePath: String?) {
+        _aiImagePath.value = imagePath
     }
 
     fun setOnAIResult(value: Boolean) {
@@ -221,7 +221,7 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
             AppEvent.AI_PROCESS -> {
 
-                val image = aiImageBytes.value!!
+                val image = aiImagePath.value!!
 
                 uploadImageToApi(
                     image,

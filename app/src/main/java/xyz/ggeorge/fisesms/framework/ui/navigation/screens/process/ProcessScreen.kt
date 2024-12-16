@@ -122,9 +122,9 @@ fun ProcessScreen(
         Spacer(modifier = Modifier.padding(top = 16.dp))
 
         AnimatedVisibility(realtimeVisionFeatureEnabled.value) {
-            RealtimeVision { imageBytes: ByteArray? ->
+            RealtimeVision { imagePath: String? ->
                 coroutine.launch {
-                    vm.setAIImageBytes(imageBytes)
+                    vm.setAIImagePath(imagePath)
                     vm.onEvent(AppEvent.AI_PROCESS, ctx)
                 }
 

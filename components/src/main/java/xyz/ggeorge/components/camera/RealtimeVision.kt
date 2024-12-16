@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun RealtimeVision(modifier: Modifier = Modifier, onPhotoCaptured: (ByteArray?) -> Unit) {
+fun RealtimeVision(modifier: Modifier = Modifier, onPhotoCaptured: (String?) -> Unit) {
 
     var isFlashEnabled by remember { mutableStateOf(false) }
     var zoomLevel by remember { mutableStateOf(ZoomLevel.X1) }

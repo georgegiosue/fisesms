@@ -6,7 +6,6 @@ import androidx.annotation.OptIn
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
-import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
@@ -42,7 +41,7 @@ fun CameraScreen(
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     imageCaptureBuilder: ImageCapture.Builder = ImageCapture.Builder(),
     onCamera: (camera: Camera?) -> Unit,
-    onPhotoCaptured: (ByteArray?) -> Unit
+    onPhotoCaptured: (String?) -> Unit
 ) {
     val cameraProviderFuture = remember {
         ProcessCameraProvider.getInstance(contextCurrent)
@@ -52,11 +51,8 @@ fun CameraScreen(
         mutableStateOf<ImageCapture?>(null)
     }
 
-    lateinit var imageAnalyzer: ImageAnalysis
-
     val cameraExecutor = Executors.newSingleThreadExecutor()
 
-    // Crear un Uri para almacenar la imagen capturada
     val outputDirectory = contextCurrent.cacheDir
     val photoFile = File(outputDirectory, "${System.currentTimeMillis()}.jpg")
     val photoUri = FileProvider.getUriForFile(
@@ -66,7 +62,6 @@ fun CameraScreen(
     )
 
     Box(modifier = modifier.fillMaxSize()) {
-        // Vista de cámara
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { context ->
@@ -81,24 +76,13 @@ fun CameraScreen(
 
                 preview.setSurfaceProvider(previewView.surfaceProvider)
 
-                imageAnalyzer = ImageAnalysis.Builder()
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .build()
-                    .also { analysisUseCase: ImageAnalysis ->
-                        analysisUseCase.setAnalyzer(
-                            cameraExecutor,
-                            InferenceCouponFiseAnalyzer(ctx = context)
-                        )
-                    }
-
                 try {
                     val cameraProvider = cameraProviderFuture.get()
                     val camera = cameraProvider.bindToLifecycle(
                         lifecycleOwner,
                         selector,
                         preview,
-                        imageCapture,
-                        imageAnalyzer
+                        imageCapture
                     )
 
                     onCamera(camera)
@@ -109,7 +93,6 @@ fun CameraScreen(
             }
         )
 
-        // Botón para tomar una foto
         Button(
             onClick = {
                 imageCapture?.takePicture(
@@ -118,18 +101,16 @@ fun CameraScreen(
                     object : ImageCapture.OnImageSavedCallback {
                         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                             try {
-                                // Leer el archivo y convertirlo a ByteArray
-                                val photoBytes = photoFile.readBytes()
-                                onPhotoCaptured(photoBytes) // Retornar los bytes de la imagen
+                                onPhotoCaptured(photoFile.absolutePath)
                             } catch (e: Exception) {
                                 e.printStackTrace()
-                                onPhotoCaptured(null) // Enviar null en caso de error
+                                onPhotoCaptured(null)
                             }
                         }
 
                         override fun onError(exception: ImageCaptureException) {
                             exception.printStackTrace()
-                            onPhotoCaptured(null) // Enviar null en caso de error
+                            onPhotoCaptured(null)
                         }
                     }
                 )
