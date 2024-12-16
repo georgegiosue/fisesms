@@ -52,6 +52,9 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
     private val _aiDniValue = MutableStateFlow("")
     val aiDniValue: StateFlow<String> = _aiDniValue.asStateFlow()
 
+    private val _processingTimeSeconds = MutableStateFlow(0F)
+    val processingTimeSeconds: StateFlow<Float> = _processingTimeSeconds.asStateFlow()
+
     private val _coupons = _sortType
         .flatMapLatest { sortType ->
             when (sortType) {
@@ -223,6 +226,8 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
                 val image = aiImagePath.value!!
 
+                _processingTimeSeconds.value = 0.00F
+
                 uploadImageToApi(
                     image,
                     onSuccess = { couponRegion, couponCode, dniRegion, dniNumber, processingTime ->
@@ -232,6 +237,9 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
                         _aiCouponValue.value = couponCode
                         _aiDniValue.value = dniNumber
+                        val processingTimeAsFloat =
+                            processingTime.split(" ").firstOrNull()?.toFloatOrNull()
+                        _processingTimeSeconds.value = processingTimeAsFloat ?: 0F
 
                         _onAIResult.value = true
 

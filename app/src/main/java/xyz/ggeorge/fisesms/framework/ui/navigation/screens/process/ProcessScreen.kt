@@ -16,8 +16,13 @@ import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -26,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import xyz.ggeorge.components.AlertDialog
 import xyz.ggeorge.components.AnimatedFadeInText
@@ -71,6 +77,7 @@ fun ProcessScreen(
     val aiCouponValue = vm.aiCouponValue.collectAsState()
     val aiDniValue = vm.aiDniValue.collectAsState()
     val onAIResponse = vm.onAIResult.collectAsState()
+    val processingTimeSeconds = vm.processingTimeSeconds.collectAsState()
 
     val realtimeVisionFeatureEnabled =
         settingsViewModel.realtimeVisionFeatureEnabled.collectAsState(initial = false)
@@ -127,7 +134,33 @@ fun ProcessScreen(
                     vm.setAIImagePath(imagePath)
                     vm.onEvent(AppEvent.AI_PROCESS, ctx)
                 }
+            }
+        }
 
+        if (processingTimeSeconds.value > 0.00F) {
+            Text(
+                text = "Imagen procesada en ${processingTimeSeconds.value} segundos",
+                fontWeight = FontWeight.Medium,
+                fontSize = 11.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.padding(top = 8.dp))
+
+        if (state.value == ProcessState.ERROR_AI_PROCESS) {
+            var isVisible by remember { mutableStateOf(true) }
+
+            LaunchedEffect(Unit) {
+                delay(5000)
+                isVisible = false
+            }
+
+            if (isVisible) {
+                Text(
+                    text = "Error al procesar la imagen, intente de nuevo",
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 11.sp
+                )
             }
         }
 
@@ -234,14 +267,7 @@ fun ProcessScreen(
                 )
             }
 
-            ProcessState.ERROR_AI_PROCESS -> {
-
-                AlertDialog(
-                    title = "¡ERROR al procesar la imagen con IA!",
-                    timer = fiseError.value.message,
-                    color = fiseWrongColor
-                )
-            }
+            else -> {}
         }
     }
 }
