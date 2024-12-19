@@ -56,9 +56,7 @@ Text messages (SMS) are sent to the number `+55555` with the discount code (`VAL
 number of the beneficiary.
 
 ```html
-fise ah01
-<DNI>
-    <VALE>
+fise ah01 <DNI> <VALE>
 ```
 
 To check the balance, proceed as follows:
