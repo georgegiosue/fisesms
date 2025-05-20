@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.ggeorge.core.domain.Fise
@@ -27,6 +29,7 @@ import xyz.ggeorge.fisesms.framework.ui.lib.decodeBase64ToBitmap
 import xyz.ggeorge.fisesms.framework.ui.lib.toast
 import xyz.ggeorge.fisesms.framework.ui.state.CouponsState
 import xyz.ggeorge.fisesms.framework.ui.state.SortType
+import xyz.ggeorge.fisesms.framework.ui.viewmodels.SettingsViewModel.Companion.SERVICE_NUMBER_KEY
 import xyz.ggeorge.fisesms.interactors.implementation.SMSManager
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -178,9 +181,14 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
                     val fiseToSend = fise.value as Fise.ToSend
 
                     try {
+
+                        val serviceNumber = ctx?.dataStore!!.data.map { preferences ->
+                            preferences[SERVICE_NUMBER_KEY] ?: "55555"
+                        }.first()
+
                         smsManager.send(
                             SMS(
-                                Fise.SERVICE_PHONE_NUMBER,
+                                serviceNumber,
                                 fiseToSend.payload()
                             ),
                             ctx!!
@@ -204,9 +212,13 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
                     try {
 
+                        val serviceNumber = ctx?.dataStore!!.data.map { preferences ->
+                            preferences[SERVICE_NUMBER_KEY] ?: "55555"
+                        }.first()
+
                         smsManager.send(
                             SMS(
-                                Fise.SERVICE_PHONE_NUMBER,
+                                serviceNumber,
                                 Fise.BALANCE
                             ),
                             ctx!!

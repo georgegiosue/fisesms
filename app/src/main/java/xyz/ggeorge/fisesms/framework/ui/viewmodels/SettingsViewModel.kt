@@ -18,9 +18,13 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 class SettingsViewModel(private val application: Application) : AndroidViewModel(application) {
 
-    private val REALTIME_VISION_FEATURE_KEY = booleanPreferencesKey("realtime_vision_feature")
-    private val ALIAS_KEY = stringPreferencesKey("alias")
-    private val SERVICE_NUMBER_KEY = stringPreferencesKey("service_number")
+    companion object {
+        private val REALTIME_VISION_FEATURE_KEY = booleanPreferencesKey("realtime_vision_feature")
+        private val ALIAS_KEY = stringPreferencesKey("alias")
+        val SERVICE_NUMBER_KEY = stringPreferencesKey("service_number")
+
+    }
+
 
     val realtimeVisionFeatureEnabled: Flow<Boolean> = application.dataStore.data
         .map { preferences ->
