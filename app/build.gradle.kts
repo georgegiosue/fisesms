@@ -1,5 +1,3 @@
-extensions.getByType(BasePluginExtension::class.java).archivesName.set("archiveName")
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -114,7 +112,4 @@ dependencies {
 
 }
 
-tasks.withType<Jar> {
-    val archiveName = "${rootProject.name}-${Versioning.name}"
-    archiveBaseName.set(archiveName)
-}
+extensions.getByType(BasePluginExtension::class.java).archivesName.set("${rootProject.name}-${Versioning.name}")
