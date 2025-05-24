@@ -3,14 +3,14 @@ package xyz.ggeorge.theme
 import androidx.compose.ui.graphics.Color
 
 // FISE SMS Response State | Light Theme
-val FiseSuccessfullColorLight = Color(0xFF8BF89E)
-val FiseWrongColorLight = Color(0xFFE2DBB9)
-val FiseWasProcessedColorLight = Color(0xFFF1CCC4)
+val FiseSuccessfullColorLight = Color(0xFF00971B)
+val FiseWrongColorLight = Color(0xFFFFC400)
+val FiseWasProcessedColorLight = Color(0xFFFF3D00)
 
 // FISE SMS Response State | Dark Theme
 val FiseSuccessfullColorDark = Color(0xFF14352b)
-val FiseWrongColorDark = Color(0xFF49473a)
-val FiseWasProcessedColorDark = Color(0xFF5f3f37)
+val FiseWrongColorDark = Color(0xFFB69203)
+val FiseWasProcessedColorDark = Color(0xFF761700)
 
 val md_theme_light_primary = Color(0xFF006E11)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)

@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -222,8 +225,9 @@ fun ProcessScreen(
 
                         AlertDialog(
                             title = "¡Vale Procesado Exitosamente!",
-                            timer = "Se proceso el vale: ${fiseProcessed.code}",
-                            color = fiseSuccessfullyColor
+                            message = "Se proceso el vale: ${fiseProcessed.code}",
+                            accentColor = fiseSuccessfullyColor,
+                            icon = Icons.Filled.Check
                         )
                     }
 
@@ -233,24 +237,27 @@ fun ProcessScreen(
 
                         AlertDialog(
                             title = "¡Vale Procesado anteriormente!",
-                            timer = "Vale: ${lastFiseSent.value!!.code} \n Procesado por: ${fiseWasProcessed.agentDNI}",
-                            color = fiseWasProcessedColor
+                            message = "Vale: ${lastFiseSent.value!!.code} \nProcesado por: ${fiseWasProcessed.agentDNI}",
+                            accentColor = fiseWasProcessedColor,
+                            icon = Icons.Filled.Warning
                         )
                     }
 
                     FiseState.WRONG -> {
                         AlertDialog(
                             title = "¡DOC BENEFICIARIO O VALE ERRADO!",
-                            timer = "Verifique que los datos esten correctos",
-                            color = fiseWrongColor
+                            message = "Verifique que los datos esten correctos",
+                            accentColor = fiseWrongColor,
+                            icon = Icons.Filled.Error
                         )
                     }
 
                     FiseState.SYNTAX_ERROR -> {
                         AlertDialog(
                             title = "¡Error de Sintaxis!",
-                            timer = "Verifique que el DNI y/o el codigo de VALE esten correctos",
-                            color = fiseWrongColor
+                            message = "Verifique que el DNI y/o el codigo de VALE esten correctos",
+                            accentColor = fiseWrongColor,
+                            icon = Icons.Filled.Error
                         )
                     }
 
@@ -262,8 +269,8 @@ fun ProcessScreen(
 
                 AlertDialog(
                     title = "¡ERROR al procesar el VALE FISE!",
-                    timer = fiseError.value.message,
-                    color = fiseWrongColor
+                    message = fiseError.value.message,
+                    accentColor = fiseWrongColor
                 )
             }
 

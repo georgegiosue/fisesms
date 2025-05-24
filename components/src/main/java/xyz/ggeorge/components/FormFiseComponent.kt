@@ -85,7 +85,11 @@ fun FormFiseComponent(
                 }
             }
         },
-        onValueChange = { dni.value = it },
+        onValueChange = {
+            if (it.length <= 8) {
+                dni.value = it
+            }
+        },
         label = { Text("DNI") },
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
@@ -115,7 +119,11 @@ fun FormFiseComponent(
                 }
             }
         },
-        onValueChange = { vale.value = it },
+        onValueChange = {
+            if (it.length <= 13) {
+                vale.value = it
+            }
+        },
         label = { Text("Vale") },
         supportingText = { Text("Formato: 05-04-23-123456-1") },
         keyboardOptions = KeyboardOptions(
