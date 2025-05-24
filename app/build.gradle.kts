@@ -1,24 +1,23 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
+extensions.getByType(BasePluginExtension::class.java).archivesName.set("archiveName")
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     kotlin("plugin.serialization") version "2.0.21"
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "xyz.ggeorge.fisesms"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "xyz.ggeorge.fisesms"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 35
         versionCode = Versioning.code
         versionName = Versioning.name
-        archivesName = "${rootProject.name}-${versionName}"
-
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -113,4 +112,9 @@ dependencies {
     debugImplementation(libs.compose.tooling)
     debugImplementation(libs.compose.test.manifest)
 
+}
+
+tasks.withType<Jar> {
+    val archiveName = "${rootProject.name}-${Versioning.name}"
+    archiveBaseName.set(archiveName)
 }

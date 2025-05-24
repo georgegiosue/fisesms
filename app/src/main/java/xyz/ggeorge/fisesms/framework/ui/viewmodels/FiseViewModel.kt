@@ -133,24 +133,20 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
      * @return Estado inferido según el primer o segundo token.
      */
     fun determinateState(): FiseState {
-        // 1) Normalizamos y tokenizamos de forma segura
         val tokens: List<String> = sms.value?.body
             ?.trim()
             ?.split(TOKEN_SPLIT_REGEX)
             .orEmpty()
-
-        // 2) Si el segundo token es "saldo", vamos a CHECK_BALANCE
+        
         tokens.getOrNull(1)
             ?.takeIf { it.equals("saldo", ignoreCase = true) }
             ?.let { return FiseState.CHECK_BALANCE }
 
-        // 3) Branch principal según el primer token
         return when (tokens.firstOrNull()?.uppercase()) {
             "EL" -> FiseState.PROCESSED
             "VALE" -> FiseState.PREVIOUSLY_PROCESSED
             "DOC.BENEF." -> FiseState.WRONG
             else -> {
-                // 4) Log de diagnóstico en desarrollo
                 logger.w("Token inesperado: ${tokens.firstOrNull()}")
                 FiseState.SYNTAX_ERROR
             }

@@ -87,12 +87,12 @@ fun CameraScreen(
                 val previewView = PreviewView(context)
                 val selector = CameraSelector.DEFAULT_BACK_CAMERA
                 val currentImageCapture = imageCaptureBuilder
-                    .setCameraSelector(selector)
+                    /*.setCameraSelector(selector)*/
                     .build()
 
                 imageCapture = currentImageCapture
 
-                preview.setSurfaceProvider(previewView.surfaceProvider)
+                preview.surfaceProvider = previewView.surfaceProvider
 
                 try {
                     val cameraProvider = cameraProviderFuture.get()

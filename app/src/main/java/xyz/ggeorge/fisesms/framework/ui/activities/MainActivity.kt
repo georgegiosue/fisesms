@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -127,22 +126,7 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                Toast.makeText(this, "Permisos concedidos", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Permisos necesarios para continuar", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
-    }
+    
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
