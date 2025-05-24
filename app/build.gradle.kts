@@ -1,4 +1,3 @@
-import org.gradle.language.nativeplatform.internal.BuildType
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 
 plugins {
@@ -20,6 +19,7 @@ android {
         versionName = Versioning.name
         archivesName = "${rootProject.name}-${versionName}"
 
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -27,13 +27,13 @@ android {
     }
 
     signingConfigs {
-        named(BuildType.DEBUG.name) {
+        getByName("debug") {
             storeFile = rootProject.file("secrets/debug-keystore.jks")
             storePassword = envOrProp("DEBUG_KEYSTORE_PASSWORD")
             keyAlias = "debug"
             keyPassword = envOrProp("DEBUG_KEY_PASSWORD")
         }
-        register(BuildType.RELEASE.name) {
+        register("release") {
             storeFile = rootProject.file("secrets/release-keystore.jks")
             storePassword = envOrProp("RELEASE_KEYSTORE_PASSWORD")
             keyAlias = "release"
@@ -41,13 +41,13 @@ android {
         }
     }
     buildTypes {
-        named(BuildType.DEBUG.name) {
-            signingConfig = signingConfigs.getByName(BuildType.DEBUG.name)
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
             isDebuggable = true
         }
-        named(BuildType.RELEASE.name) {
+        getByName("release") {
             if (rootProject.file("secrets/release-keystore.jks").exists()) {
-                signingConfig = signingConfigs.getByName(BuildType.RELEASE.name)
+                signingConfig = signingConfigs.getByName("release")
             }
             isMinifyEnabled = true
             isShrinkResources = true
@@ -66,6 +66,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
@@ -98,6 +99,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter)
     implementation(libs.retrofit.okhttp)
+    implementation(libs.timber)
 
     annotationProcessor(libs.room.compiler)
 

@@ -4,6 +4,7 @@ import xyz.ggeorge.core.domain.state.FiseState
 import xyz.ggeorge.core.util.FiseRegex
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 sealed class Fise(var state: FiseState) {
 
@@ -12,39 +13,44 @@ sealed class Fise(var state: FiseState) {
         const val SERVICE_CODE = "fise ah01"
         const val BALANCE = "Saldo ah01"
 
-        fun fromSMS(sms: SMS, fiseState: FiseState): Fise {
 
-            val smsBody = sms.body
-
-            return when (fiseState) {
-                FiseState.PROCESSED -> {
-                    with(FiseRegex.PROCESSED) {
-                        val dni = (DNI match smsBody)?.groupValues?.get(1)!!
-                        val vale = (VALE match smsBody)?.groupValues?.get(1)!!
-                        val amount = (AMOUNT match smsBody)?.groupValues?.get(1)!!.toDouble()
-
-                        return Processed(dni = dni, code = vale, amount = amount)
-                    }
-                }
-
-                FiseState.PREVIOUSLY_PROCESSED -> {
-                    with(FiseRegex.PREVIOUSLY_PROCESSED) {
-                        val dateString = (DATE match smsBody)?.value
-                        val agentDNI = (AGENT_DNI match smsBody)?.value?.substring(6)!!
-
-                        val dateFormat = SimpleDateFormat(
-                            "yyyy/MM/dd HH:mm:ss",
-                            java.util.Locale.getDefault()
-                        )
-                        val date = dateFormat.parse(dateString)
-
-                        return PreviouslyProcessed(date = date, agentDNI = agentDNI)
-                    }
-                }
-
-                FiseState.WRONG -> Wrong(smsBody)
-                else -> SyntaxError(smsBody)
+        /**
+         * Extrae los datos del SMS según su estado.
+         * Lanza IllegalArgumentException si el patrón no coincide.
+         */
+        fun fromSMS(body: String?, state: FiseState): Fise =
+            when (state) {
+                FiseState.PROCESSED -> extractProcessed(body)
+                FiseState.PREVIOUSLY_PROCESSED -> extractPreviouslyProcessed(body)
+                FiseState.WRONG -> Wrong(body.orEmpty())
+                FiseState.SYNTAX_ERROR -> SyntaxError(body.orEmpty())
+                else -> throw IllegalArgumentException("Estado no soportado: $state")
             }
+
+        private fun extractProcessed(body: String?): Processed {
+            val match = FiseRegex.Companion.PROCESSED.pattern.find(body.orEmpty())
+                ?: throw IllegalArgumentException("El SMS no coincide con la plantilla PROCESSED")
+            val (dni, coupon, amountStr) = match.destructured
+            return Processed(
+                dni = dni,
+                code = coupon,
+                amount = amountStr.toDouble()
+            )
+        }
+
+        private fun extractPreviouslyProcessed(body: String?): PreviouslyProcessed {
+
+            val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
+
+            val match = FiseRegex.Companion.PREVIOUSLY_PROCESSED.pattern.find(body.orEmpty())
+                ?: throw IllegalArgumentException("El SMS no coincide con la plantilla PREVIOUSLY_PROCESSED")
+            val (dateStr, agentDni) = match.destructured
+            val date = dateFormat.parse(dateStr)
+                ?: throw IllegalArgumentException("Error al parsear la fecha: $dateStr")
+            return PreviouslyProcessed(
+                date = date,
+                agentDNI = agentDni
+            )
         }
     }
 

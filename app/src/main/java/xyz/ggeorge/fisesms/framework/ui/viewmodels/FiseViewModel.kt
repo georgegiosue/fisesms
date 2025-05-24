@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import xyz.ggeorge.core.domain.Fise
 import xyz.ggeorge.core.domain.SMS
 import xyz.ggeorge.core.domain.events.AppEvent
@@ -34,6 +35,8 @@ import xyz.ggeorge.fisesms.interactors.implementation.SMSManager
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
+
+    private val logger = Timber.tag("FiseViewModel")
 
     private val _fise = MutableStateFlow<Fise>(Fise.ToSend("", ""))
     val fise: StateFlow<Fise> = _fise.asStateFlow()
@@ -92,6 +95,8 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
     private val _fiseError = MutableStateFlow(FiseError(""))
     val fiseError: StateFlow<FiseError> = _fiseError.asStateFlow()
 
+    private val TOKEN_SPLIT_REGEX: Regex = "\\s+".toRegex()
+
     private fun setProcessState(value: ProcessState) {
         _processState.value = value
     }
@@ -110,7 +115,7 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
     private fun smsToFise(sms: SMS, fiseState: FiseState): Fise {
 
-        return Fise.fromSMS(sms, fiseState)
+        return Fise.fromSMS(sms.body, fiseState)
     }
 
     fun setAIImagePath(imagePath: String?) {
@@ -121,21 +126,34 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
         _onAIResult.value = value
     }
 
-    private fun determinateState(): FiseState {
+    /**
+     * Determina el estado FISE a partir del contenido del SMS.
+     *
+     * @param body Texto completo del SMS recibido (puede ser null o vacío).
+     * @return Estado inferido según el primer o segundo token.
+     */
+    fun determinateState(): FiseState {
+        // 1) Normalizamos y tokenizamos de forma segura
+        val tokens: List<String> = sms.value?.body
+            ?.trim()
+            ?.split(TOKEN_SPLIT_REGEX)
+            .orEmpty()
 
-        val smsBodyChars = sms.value?.body?.split(' ')
+        // 2) Si el segundo token es "saldo", vamos a CHECK_BALANCE
+        tokens.getOrNull(1)
+            ?.takeIf { it.equals("saldo", ignoreCase = true) }
+            ?.let { return FiseState.CHECK_BALANCE }
 
-        try {
-            if (smsBodyChars?.get(1) == "saldo") return FiseState.CHECK_BALANCE
-        } catch (e: IndexOutOfBoundsException) {
-            e.printStackTrace()
-        }
-
-        return when (smsBodyChars?.get(0)) {
-            "El" -> FiseState.PROCESSED
+        // 3) Branch principal según el primer token
+        return when (tokens.firstOrNull()?.uppercase()) {
+            "EL" -> FiseState.PROCESSED
             "VALE" -> FiseState.PREVIOUSLY_PROCESSED
             "DOC.BENEF." -> FiseState.WRONG
-            else -> FiseState.SYNTAX_ERROR
+            else -> {
+                // 4) Log de diagnóstico en desarrollo
+                logger.w("Token inesperado: ${tokens.firstOrNull()}")
+                FiseState.SYNTAX_ERROR
+            }
         }
     }
 

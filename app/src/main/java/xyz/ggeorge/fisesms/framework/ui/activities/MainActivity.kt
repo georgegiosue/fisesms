@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.LineStyle
-import androidx.compose.material.icons.outlined.PieChartOutline
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -196,16 +195,16 @@ fun ActivityContent(
                             )
                         }
 
-                        IconButton(
-                            onClick = {
-                                navController.navigate(Charts)
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.PieChartOutline,
-                                contentDescription = "Graficos"
-                            )
-                        }
+                        /* IconButton(
+                             onClick = {
+                                 navController.navigate(Charts)
+                             }
+                         ) {
+                             Icon(
+                                 imageVector = Icons.Outlined.PieChartOutline,
+                                 contentDescription = "Graficos"
+                             )
+                         }*/
                         IconButton(
                             onClick = {
                                 navController.navigate(Settings)

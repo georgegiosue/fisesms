@@ -1,26 +1,34 @@
 package xyz.ggeorge.core.util
 
+/**
+ * Sealed representation de los distintos patrones regex usados
+ * para extraer campos de los SMS FISE.
+ */
 sealed class FiseRegex {
-    infix fun String.match(target: String): MatchResult? {
-        return this.toRegex().find(target)
-    }
+    abstract val pattern: Regex
 
-    object PROCESSED : FiseRegex() {
-        const val DNI: String = """DNI: (\d+)"""
-        const val VALE: String = """Cupon: (\d+)"""
-        const val AMOUNT: String = """Importe: S/. (\d+\.\d+)"""
-    }
+    companion object {
+        // Precompilamos todos los patrones en un objeto singleton
+        object PROCESSED : FiseRegex() {
+            override val pattern = Regex(
+                "DNI: (\\d+).*?CUPON: (\\d+).*?IMPORTE: S\\/\\.\\s*(\\d+(?:\\.\\d+)?)",
+                setOf(RegexOption.DOT_MATCHES_ALL, RegexOption.IGNORE_CASE)
+            )
+        }
 
-    object PREVIOUSLY_PROCESSED : FiseRegex() {
-        const val DATE: String = """\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}"""
-        const val AGENT_DNI: String = """\d{14}"""
-    }
+        object PREVIOUSLY_PROCESSED : FiseRegex() {
+            override val pattern = Regex(
+                "VALE PROCESADO: (\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2})\\s*(\\d{6,})",
+                RegexOption.DOT_MATCHES_ALL
+            )
+        }
 
-    object WRONG : FiseRegex() {
-        const val MSG = """.*"""
-    }
+        object WRONG : FiseRegex() {
+            override val pattern = Regex("DOC\\.BENEF\\. O VALE ERRADO", RegexOption.IGNORE_CASE)
+        }
 
-    object SYNTAX_ERROR : FiseRegex() {
-        const val MSG = """.*"""
+        object SYNTAX_ERROR : FiseRegex() {
+            override val pattern = Regex(".*", RegexOption.DOT_MATCHES_ALL)
+        }
     }
 }
