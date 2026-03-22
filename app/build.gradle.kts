@@ -25,10 +25,12 @@ android {
 
     signingConfigs {
         getByName("debug") {
-            storeFile = rootProject.file("secrets/debug-keystore.jks")
-            storePassword = envOrProp("DEBUG_KEYSTORE_PASSWORD")
-            keyAlias = "debug"
-            keyPassword = envOrProp("DEBUG_KEY_PASSWORD")
+            if (rootProject.file("secrets/debug-keystore.jks").exists()) {
+                storeFile = rootProject.file("secrets/debug-keystore.jks")
+                storePassword = envOrProp("DEBUG_KEYSTORE_PASSWORD")
+                keyAlias = "debug"
+                keyPassword = envOrProp("DEBUG_KEY_PASSWORD")
+            }
         }
         register("release") {
             storeFile = rootProject.file("secrets/release-keystore.jks")
