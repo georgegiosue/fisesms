@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"INSERT\\\\|UPDATE\\\\|DELETE\" /home/george/StudioProjects/fisesms/app/src/main/java/xyz/ggeorge/fisesms/data/dao/ --include=\"*.kt\" 2>/dev/null | head -20)"
+    ]
+  }
+}

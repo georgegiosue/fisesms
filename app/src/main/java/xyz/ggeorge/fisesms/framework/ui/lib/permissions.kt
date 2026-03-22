@@ -1,5 +1,6 @@
 package xyz.ggeorge.fisesms.framework.ui.lib
 
+import android.os.Build
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,14 +19,17 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequestPermissions(onDismissRequest: () -> Unit) {
-    val multiplePermissionsState = rememberMultiplePermissionsState(
-        listOf(
-            PERMISSIONS.CAMERA,
-            PERMISSIONS.SEND_SMS,
-            PERMISSIONS.RECEIVE_SMS,
-            PERMISSIONS.INTERNET,
-        )
-    )
+    val permissions = buildList {
+        add(PERMISSIONS.CAMERA)
+        add(PERMISSIONS.SEND_SMS)
+        add(PERMISSIONS.RECEIVE_SMS)
+        add(PERMISSIONS.INTERNET)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(PERMISSIONS.POST_NOTIFICATIONS)
+        }
+    }
+
+    val multiplePermissionsState = rememberMultiplePermissionsState(permissions)
 
     if (!multiplePermissionsState.allPermissionsGranted) {
         AlertDialog(onDismissRequest = { }, confirmButton = {
@@ -56,7 +60,7 @@ fun RequestPermissions(onDismissRequest: () -> Unit) {
             }
         }, title = {
             Text(
-                text = "Permisos de Camara, SMS e Internet",
+                text = "Permisos de Camara, SMS, Internet y Notificaciones",
                 style = TextStyle(
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
@@ -64,7 +68,7 @@ fun RequestPermissions(onDismissRequest: () -> Unit) {
             )
         }, text = {
             Text(
-                text = "Los permisos de la camara, enviar / recibir SMS e Internet estan denegados. Por favor, autoriza los permisos para continuar.",
+                text = "Los permisos de la camara, enviar / recibir SMS, Internet y notificaciones estan denegados. Por favor, autoriza los permisos para continuar.",
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Normal

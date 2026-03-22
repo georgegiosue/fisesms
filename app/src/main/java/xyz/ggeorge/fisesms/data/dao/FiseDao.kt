@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Upsert
 import xyz.ggeorge.fisesms.data.entities.FiseEntity
+import xyz.ggeorge.fisesms.data.entities.ProcessingResultEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -30,4 +31,13 @@ interface FiseDao {
 
     @Delete
     fun delete(fise: FiseEntity)
+
+    @Upsert
+    suspend fun upsertResult(result: ProcessingResultEntity)
+
+    @Query("SELECT * FROM processing_result WHERE id = 1")
+    fun observeLatestResult(): Flow<ProcessingResultEntity?>
+
+    @Query("DELETE FROM processing_result WHERE id = 1")
+    suspend fun clearLatestResult()
 }

@@ -31,6 +31,7 @@ import xyz.ggeorge.fisesms.framework.ui.lib.toast
 import xyz.ggeorge.fisesms.framework.ui.state.CouponsState
 import xyz.ggeorge.fisesms.framework.ui.state.SortType
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.SettingsViewModel.Companion.SERVICE_NUMBER_KEY
+import xyz.ggeorge.fisesms.interactors.implementation.FiseStateResolver
 import xyz.ggeorge.fisesms.interactors.implementation.SMSManager
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -95,7 +96,40 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
     private val _fiseError = MutableStateFlow(FiseError(""))
     val fiseError: StateFlow<FiseError> = _fiseError.asStateFlow()
 
-    private val TOKEN_SPLIT_REGEX: Regex = "\\s+".toRegex()
+    init {
+        observeProcessingResults()
+    }
+
+    private fun observeProcessingResults() {
+        viewModelScope.launch {
+            fiseDao.observeLatestResult().collect { result ->
+                if (result == null) return@collect
+
+                val state = try {
+                    FiseState.valueOf(result.state)
+                } catch (e: IllegalArgumentException) {
+                    logger.w("Estado desconocido en processing_result: ${result.state}")
+                    return@collect
+                }
+
+                val body = result.smsBody
+
+                if (state == FiseState.CHECK_BALANCE) {
+                    _balance.value = extractBalanceFromBody(body)
+                    setBalanceState(BalanceState.BALANCE_CHECKED)
+                } else {
+                    try {
+                        _fise.value = Fise.fromSMS(body, state)
+                    } catch (e: Exception) {
+                        logger.e(e, "Error parseando SMS desde processing_result")
+                    }
+                    setProcessState(ProcessState.COUPON_RECEIVED)
+                }
+
+                fiseDao.clearLatestResult()
+            }
+        }
+    }
 
     private fun setProcessState(value: ProcessState) {
         _processState.value = value
@@ -113,11 +147,6 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
         this.sms.value = sms
     }
 
-    private fun smsToFise(sms: SMS, fiseState: FiseState): Fise {
-
-        return Fise.fromSMS(sms.body, fiseState)
-    }
-
     fun setAIImagePath(imagePath: String?) {
         _aiImagePath.value = imagePath
     }
@@ -126,32 +155,11 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
         _onAIResult.value = value
     }
 
-    /**
-     * Determina el estado FISE a partir del contenido del SMS.
-     *
-     * @param body Texto completo del SMS recibido (puede ser null o vacío).
-     * @return Estado inferido según el primer o segundo token.
-     */
     fun determinateState(): FiseState {
-        val tokens: List<String> = sms.value?.body
-            ?.trim()
-            ?.split(TOKEN_SPLIT_REGEX)
-            .orEmpty()
-        
-        tokens.getOrNull(1)
-            ?.takeIf { it.equals("saldo", ignoreCase = true) }
-            ?.let { return FiseState.CHECK_BALANCE }
-
-        return when (tokens.firstOrNull()?.uppercase()) {
-            "EL" -> FiseState.PROCESSED
-            "VALE" -> FiseState.PREVIOUSLY_PROCESSED
-            "DOC.BENEF." -> FiseState.WRONG
-            else -> {
-                logger.w("Token inesperado: ${tokens.firstOrNull()}")
-                FiseState.SYNTAX_ERROR
-            }
-        }
+        return FiseStateResolver.determine(sms.value?.body)
     }
+
+    private fun extractBalanceFromBody(body: String): String = body.split(':').getOrElse(3) { "" }
 
     private fun extractBalanceFromSms(sms: SMS): String = sms.body.split(':')[3]
 
@@ -166,7 +174,7 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
 
                     setBalanceState(BalanceState.BALANCE_CHECKED)
                 } else {
-                    _fise.value = smsToFise(sms.value!!, state)
+                    _fise.value = Fise.fromSMS(sms.value!!.body, state)
 
                     setProcessState(ProcessState.COUPON_RECEIVED)
 

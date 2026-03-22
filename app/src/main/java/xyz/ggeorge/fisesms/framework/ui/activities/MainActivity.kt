@@ -1,9 +1,5 @@
 package xyz.ggeorge.fisesms.framework.ui.activities
 
-import android.Manifest
-import android.app.Activity
-import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,15 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.room.Room
-import xyz.ggeorge.fisesms.data.database.AppDatabase
+import xyz.ggeorge.fisesms.FiseSMSApp
 import xyz.ggeorge.fisesms.framework.ui.lib.RequestPermissions
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.charts.Charts
 import xyz.ggeorge.fisesms.framework.ui.navigation.screens.charts.ChartsScreen
@@ -49,27 +42,17 @@ import xyz.ggeorge.fisesms.framework.ui.navigation.screens.transactions.Transact
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.ChartsViewModel
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.FiseViewModel
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.SettingsViewModel
-import xyz.ggeorge.fisesms.interactors.implementation.SmsReceiver
 import xyz.ggeorge.theme.FisesmsTheme
 
 class MainActivity : ComponentActivity() {
 
-    private val smsReceiver: SmsReceiver = SmsReceiver()
-    private val intentFilter = IntentFilter(SmsReceiver.INTENT_FILTER)
-
-    private val db by lazy {
-        Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java,
-            "fise_db"
-        ).build()
-    }
+    private val fiseDao by lazy { (application as FiseSMSApp).fiseDao }
 
     private val viewModel by viewModels<FiseViewModel>(
         factoryProducer = {
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return FiseViewModel(db.fiseDao) as T
+                    return FiseViewModel(fiseDao) as T
                 }
             }
         }
@@ -79,7 +62,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return ChartsViewModel(db.fiseDao) as T
+                    return ChartsViewModel(fiseDao) as T
                 }
             }
         }
@@ -95,38 +78,10 @@ class MainActivity : ComponentActivity() {
                     finish()
                 })
 
-                checkAndRequestPermissions(this)
-
                 ActivityContent(viewModel, settingsViewModel, chartsViewModel)
-
-                registerReceiver(smsReceiver, intentFilter)
             }
         }
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(smsReceiver)
-    }
-
-    private val REQUEST_CODE_PERMISSIONS = 101
-    private val REQUIRED_PERMISSIONS = arrayOf(
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    )
-
-    fun checkAndRequestPermissions(activity: Activity) {
-        if (REQUIRED_PERMISSIONS.any {
-                ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
-            }) {
-            ActivityCompat.requestPermissions(
-                activity,
-                REQUIRED_PERMISSIONS,
-                REQUEST_CODE_PERMISSIONS
-            )
-        }
-    }
-    
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
