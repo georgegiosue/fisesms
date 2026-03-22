@@ -31,6 +31,7 @@ import xyz.ggeorge.fisesms.framework.ui.lib.toast
 import xyz.ggeorge.fisesms.framework.ui.state.CouponsState
 import xyz.ggeorge.fisesms.framework.ui.state.SortType
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.SettingsViewModel.Companion.SERVICE_NUMBER_KEY
+import xyz.ggeorge.fisesms.framework.ui.viewmodels.SettingsViewModel.Companion.SIM_SUBSCRIPTION_ID_KEY
 import xyz.ggeorge.fisesms.interactors.implementation.FiseStateResolver
 import xyz.ggeorge.fisesms.interactors.implementation.SMSManager
 
@@ -208,12 +209,17 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
                             preferences[SERVICE_NUMBER_KEY] ?: "55555"
                         }.first()
 
+                        val subscriptionId = ctx.dataStore.data.map { preferences ->
+                            preferences[SIM_SUBSCRIPTION_ID_KEY] ?: -1
+                        }.first()
+
                         smsManager.send(
                             SMS(
                                 serviceNumber,
                                 fiseToSend.payload()
                             ),
-                            ctx!!
+                            ctx,
+                            subscriptionId
                         )
 
                         setProcessState(ProcessState.PROCESSING_COUPON)
@@ -238,12 +244,17 @@ class FiseViewModel(private val fiseDao: FiseDao) : ViewModel() {
                             preferences[SERVICE_NUMBER_KEY] ?: "55555"
                         }.first()
 
+                        val subscriptionId = ctx.dataStore.data.map { preferences ->
+                            preferences[SIM_SUBSCRIPTION_ID_KEY] ?: -1
+                        }.first()
+
                         smsManager.send(
                             SMS(
                                 serviceNumber,
                                 Fise.BALANCE
                             ),
-                            ctx!!
+                            ctx,
+                            subscriptionId
                         )
 
                         setBalanceState(BalanceState.CHECKING_BALANCE)

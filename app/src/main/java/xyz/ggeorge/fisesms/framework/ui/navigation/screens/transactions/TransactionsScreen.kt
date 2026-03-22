@@ -1,20 +1,24 @@
 package xyz.ggeorge.fisesms.framework.ui.navigation.screens.transactions
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ConfirmationNumber
+import androidx.compose.material.icons.outlined.ReceiptLong
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,12 +35,15 @@ import xyz.ggeorge.fisesms.data.entities.FiseEntity
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.FiseViewModel
 
 @Composable
-fun TransactionsScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme()) {
+fun TransactionsScreen(vm: FiseViewModel) {
 
     val state by vm.state.collectAsState()
 
-    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp)
+    ) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
@@ -45,6 +52,17 @@ fun TransactionsScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme(
             fontWeight = FontWeight.Bold,
             letterSpacing = 0.37.sp
         )
+
+        if (state.coupons.isNotEmpty()) {
+            Text(
+                text = "${state.coupons.size} vale${if (state.coupons.size != 1) "s" else ""} procesado${if (state.coupons.size != 1) "s" else ""}",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier
+                    .alpha(0.45f)
+                    .padding(top = 4.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -58,25 +76,36 @@ fun TransactionsScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme(
 
 @Composable
 fun EmptyTransactionsMessage() {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 32.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(top = 80.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "No hay vales FISE procesados.",
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.alpha(0.4f)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Icon(
-            Icons.Outlined.ConfirmationNumber,
-            contentDescription = null,
-            modifier = Modifier.alpha(0.4f)
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                Icons.Outlined.ReceiptLong,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(56.dp)
+                    .alpha(0.2f)
+            )
+            Text(
+                text = "Sin vales procesados",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.alpha(0.35f)
+            )
+            Text(
+                text = "Los vales FISE que proceses\naparecen aqui.",
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.alpha(0.25f)
+            )
+        }
     }
 }
 
@@ -84,11 +113,30 @@ fun EmptyTransactionsMessage() {
 fun TransactionsList(coupons: List<FiseEntity>) {
     LazyColumn(
         state = rememberLazyListState(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(coupons) { fise ->
-            FiseCard(fise = fise.toDomain())
+        item {
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+            ) {
+                Column {
+                    coupons.forEachIndexed { index, fise ->
+                        FiseCard(fise = fise.toDomain())
+                        if (index < coupons.lastIndex) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(start = 70.dp, end = 16.dp),
+                                thickness = 0.5.dp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

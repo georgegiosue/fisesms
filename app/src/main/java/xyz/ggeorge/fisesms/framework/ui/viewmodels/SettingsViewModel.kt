@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.AndroidViewModel
@@ -22,7 +23,7 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
         private val REALTIME_VISION_FEATURE_KEY = booleanPreferencesKey("realtime_vision_feature")
         private val ALIAS_KEY = stringPreferencesKey("alias")
         val SERVICE_NUMBER_KEY = stringPreferencesKey("service_number")
-
+        val SIM_SUBSCRIPTION_ID_KEY = intPreferencesKey("sim_subscription_id")
     }
 
 
@@ -39,6 +40,11 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
     val serviceNumber: Flow<String> = application.dataStore.data
         .map { preferences ->
             preferences[SERVICE_NUMBER_KEY] ?: "55555"
+        }
+
+    val simSubscriptionId: Flow<Int> = application.dataStore.data
+        .map { preferences ->
+            preferences[SIM_SUBSCRIPTION_ID_KEY] ?: -1
         }
 
     fun toggleRealtimeVisionFeature(enabled: Boolean) {
@@ -61,6 +67,14 @@ class SettingsViewModel(private val application: Application) : AndroidViewModel
         viewModelScope.launch {
             application.dataStore.edit { preferences ->
                 preferences[SERVICE_NUMBER_KEY] = serviceNumber
+            }
+        }
+    }
+
+    fun setSimSubscriptionId(id: Int) {
+        viewModelScope.launch {
+            application.dataStore.edit { preferences ->
+                preferences[SIM_SUBSCRIPTION_ID_KEY] = id
             }
         }
     }

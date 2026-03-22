@@ -24,6 +24,7 @@ fun RequestPermissions(onDismissRequest: () -> Unit) {
         add(PERMISSIONS.SEND_SMS)
         add(PERMISSIONS.RECEIVE_SMS)
         add(PERMISSIONS.INTERNET)
+        add(PERMISSIONS.READ_PHONE_STATE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             add(PERMISSIONS.POST_NOTIFICATIONS)
         }
@@ -60,7 +61,7 @@ fun RequestPermissions(onDismissRequest: () -> Unit) {
             }
         }, title = {
             Text(
-                text = "Permisos de Camara, SMS, Internet y Notificaciones",
+                text = "Permisos de Camara, SMS, Telefono, Internet y Notificaciones",
                 style = TextStyle(
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
@@ -68,7 +69,7 @@ fun RequestPermissions(onDismissRequest: () -> Unit) {
             )
         }, text = {
             Text(
-                text = "Los permisos de la camara, enviar / recibir SMS, Internet y notificaciones estan denegados. Por favor, autoriza los permisos para continuar.",
+                text = "Los permisos de la camara, enviar / recibir SMS, estado del telefono, Internet y notificaciones estan denegados. Por favor, autoriza los permisos para continuar.",
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Normal

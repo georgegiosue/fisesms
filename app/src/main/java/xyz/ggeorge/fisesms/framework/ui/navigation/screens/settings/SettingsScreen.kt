@@ -1,5 +1,9 @@
 package xyz.ggeorge.fisesms.framework.ui.navigation.screens.settings
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.telephony.SubscriptionInfo
+import android.telephony.SubscriptionManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,12 +21,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AirlineStops
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.SimCard
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -37,15 +43,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import xyz.ggeorge.fisesms.framework.ui.viewmodels.SettingsViewModel
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
 
+    val context = LocalContext.current
     val scroll = rememberScrollState()
     val realtimeVisionFeatureEnabled by viewModel.realtimeVisionFeatureEnabled.collectAsState(
         initial = false
@@ -55,6 +64,27 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
     var openAliasEditor by remember { mutableStateOf(false) }
     val serviceNumber by viewModel.serviceNumber.collectAsState(initial = "55555")
     var openServiceNumberEditor by remember { mutableStateOf(false) }
+    val simSubscriptionId by viewModel.simSubscriptionId.collectAsState(initial = -1)
+    var openSimSelector by remember { mutableStateOf(false) }
+
+    val activeSimList: List<SubscriptionInfo> = remember {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+            val subscriptionManager = SubscriptionManager.from(context)
+            subscriptionManager.activeSubscriptionInfoList ?: emptyList()
+        } else {
+            emptyList()
+        }
+    }
+
+    val selectedSimLabel = remember(simSubscriptionId, activeSimList) {
+        if (simSubscriptionId == -1) {
+            "Predeterminada"
+        } else {
+            activeSimList.find { it.subscriptionId == simSubscriptionId }
+                ?.let { "SIM ${it.simSlotIndex + 1} — ${it.carrierName}" }
+                ?: "Predeterminada"
+        }
+    }
 
     Column(
         modifier = modifier
@@ -197,6 +227,95 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                         },
                         dismissButton = {
                             TextButton(onClick = { openServiceNumberEditor = false }) {
+                                Text("Cancelar")
+                            }
+                        }
+                    )
+                }
+
+                // Tarjeta SIM
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { openSimSelector = true }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.SimCard,
+                            contentDescription = null,
+                            modifier = Modifier.alpha(0.6f)
+                        )
+                        Text(text = "Tarjeta SIM", fontSize = 17.sp)
+                    }
+                    Text(
+                        text = selectedSimLabel,
+                        fontSize = 17.sp,
+                        modifier = Modifier.alpha(0.5f)
+                    )
+                }
+
+                if (openSimSelector) {
+                    AlertDialog(
+                        onDismissRequest = { openSimSelector = false },
+                        title = { Text("Seleccionar tarjeta SIM") },
+                        text = {
+                            Column {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            viewModel.setSimSubscriptionId(-1)
+                                            openSimSelector = false
+                                        }
+                                        .padding(vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    RadioButton(
+                                        selected = simSubscriptionId == -1,
+                                        onClick = {
+                                            viewModel.setSimSubscriptionId(-1)
+                                            openSimSelector = false
+                                        }
+                                    )
+                                    Text("Predeterminada del sistema", fontSize = 16.sp)
+                                }
+                                activeSimList.forEach { simInfo ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                viewModel.setSimSubscriptionId(simInfo.subscriptionId)
+                                                openSimSelector = false
+                                            }
+                                            .padding(vertical = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        RadioButton(
+                                            selected = simSubscriptionId == simInfo.subscriptionId,
+                                            onClick = {
+                                                viewModel.setSimSubscriptionId(simInfo.subscriptionId)
+                                                openSimSelector = false
+                                            }
+                                        )
+                                        Text(
+                                            "SIM ${simInfo.simSlotIndex + 1} — ${simInfo.carrierName}",
+                                            fontSize = 16.sp
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                        confirmButton = {},
+                        dismissButton = {
+                            TextButton(onClick = { openSimSelector = false }) {
                                 Text("Cancelar")
                             }
                         }

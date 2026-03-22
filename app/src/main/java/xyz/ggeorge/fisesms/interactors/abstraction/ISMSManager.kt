@@ -6,5 +6,5 @@ import xyz.ggeorge.core.domain.SMS
 interface ISMSManager {
 
     fun checkBefore(sms: SMS): Boolean
-    suspend fun send(sms: SMS, context: Context)
+    suspend fun send(sms: SMS, context: Context, subscriptionId: Int = -1)
 }

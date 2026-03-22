@@ -15,8 +15,13 @@ class SMSManager : ISMSManager {
         return sms.body.length == Fise.ToSend.STANDARD_PROCESSED_LENGTH || sms.body.length == Fise.BALANCE.length
     }
 
-    override suspend fun send(sms: SMS, context: Context) {
-        val smsManager: SmsManager = SmsManager.getDefault()
+    override suspend fun send(sms: SMS, context: Context, subscriptionId: Int) {
+        @Suppress("DEPRECATION")
+        val smsManager = if (subscriptionId != -1) {
+            SmsManager.getSmsManagerForSubscriptionId(subscriptionId)
+        } else {
+            SmsManager.getDefault()
+        }
 
         if (checkBefore(sms))
             smsManager.sendTextMessage(

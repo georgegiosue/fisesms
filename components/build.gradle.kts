@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "xyz.ggeorge.components"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 23
