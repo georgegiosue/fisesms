@@ -100,9 +100,9 @@ fun FisesmsTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = if(darkTheme) colorScheme.surface.toArgb() else md_theme_light_primary.toArgb()
+            window.statusBarColor = colorScheme.surface.toArgb()
 
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 

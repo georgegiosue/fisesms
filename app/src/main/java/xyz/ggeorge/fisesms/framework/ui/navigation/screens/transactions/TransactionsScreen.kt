@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,7 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,15 +35,18 @@ fun TransactionsScreen(vm: FiseViewModel, isDark: Boolean = isSystemInDarkTheme(
 
     val state by vm.state.collectAsState()
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Transacciones",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            text = "Historial",
+            fontSize = 34.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.37.sp
         )
 
+        Spacer(modifier = Modifier.height(24.dp))
 
         if (state.coupons.isEmpty()) {
             EmptyTransactionsMessage()
@@ -57,18 +61,21 @@ fun EmptyTransactionsMessage() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(vertical = 32.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "No hay vales FISE procesados.",
-            style = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center)
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.alpha(0.4f)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Icon(
             Icons.Outlined.ConfirmationNumber,
-            contentDescription = "No hay vales procesados."
+            contentDescription = null,
+            modifier = Modifier.alpha(0.4f)
         )
     }
 }
@@ -77,7 +84,7 @@ fun EmptyTransactionsMessage() {
 fun TransactionsList(coupons: List<FiseEntity>) {
     LazyColumn(
         state = rememberLazyListState(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         items(coupons) { fise ->

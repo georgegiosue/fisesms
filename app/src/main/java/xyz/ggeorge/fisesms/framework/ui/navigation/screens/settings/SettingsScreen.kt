@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AirlineStops
@@ -18,9 +20,10 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -33,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,184 +59,191 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 24.dp)
             .verticalScroll(scroll)
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(
-            text = "Configuración",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.SemiBold
+            text = "Ajustes",
+            fontSize = 34.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.37.sp
         )
 
-        Spacer(modifier = Modifier.padding(vertical = 16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        Card() {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        // Sección: General
+        Text(
+            text = "GENERAL",
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.8.sp,
+            modifier = Modifier
+                .alpha(0.45f)
+                .padding(bottom = 10.dp)
+        )
+
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ) {
+            Column {
+                // Alias
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable(true) {
-                            openAliasEditor = !openAliasEditor
-                        },
+                        .clickable { openAliasEditor = !openAliasEditor }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(0.6f),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Filled.AirlineStops,
-                            contentDescription = "Alias Icono"
+                            contentDescription = null,
+                            modifier = Modifier.alpha(0.6f)
                         )
-                        Text(text = "Alias", fontSize = 18.sp)
+                        Text(text = "Alias", fontSize = 17.sp)
                     }
                     Text(
-                        modifier = Modifier.fillMaxWidth(0.4f),
                         text = alias,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.End
+                        fontSize = 17.sp,
+                        modifier = Modifier.alpha(0.5f)
                     )
-
-                    if (openAliasEditor) {
-
-                        var aliasBuffer by remember { mutableStateOf(alias) }
-
-                        AlertDialog(
-                            onDismissRequest = { openAliasEditor = false },
-                            title = { Text("Alias para procesar los vales") },
-                            text = {
-                                OutlinedTextField(
-                                    value = aliasBuffer,
-                                    onValueChange = {
-                                        aliasBuffer = it
-                                    },
-                                    label = { Text("Alias") },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            },
-                            confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        viewModel.setAlias(aliasBuffer)
-                                        openAliasEditor = false
-                                    }
-                                ) {
-                                    Text("Guardar")
-                                }
-                            },
-                            dismissButton = {
-                                TextButton(
-                                    onClick = {
-                                        openAliasEditor = false
-                                    }
-                                ) {
-                                    Text("Cancelar")
-                                }
-                            }
-                        )
-                    }
                 }
+
+                if (openAliasEditor) {
+                    var aliasBuffer by remember { mutableStateOf(alias) }
+
+                    AlertDialog(
+                        onDismissRequest = { openAliasEditor = false },
+                        title = { Text("Alias para procesar los vales") },
+                        text = {
+                            OutlinedTextField(
+                                value = aliasBuffer,
+                                onValueChange = { aliasBuffer = it },
+                                label = { Text("Alias") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                viewModel.setAlias(aliasBuffer)
+                                openAliasEditor = false
+                            }) {
+                                Text("Guardar")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { openAliasEditor = false }) {
+                                Text("Cancelar")
+                            }
+                        }
+                    )
+                }
+
+                // Numero de servicio
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable(true) {
-                            openServiceNumberEditor = !openServiceNumberEditor
-                        },
+                        .clickable { openServiceNumberEditor = !openServiceNumberEditor }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(0.6f),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Tag,
-                            contentDescription = "Numero de servicio Icono"
+                            contentDescription = null,
+                            modifier = Modifier.alpha(0.6f)
                         )
-                        Text(text = "Numero de Servicio", fontSize = 18.sp)
+                        Text(text = "Numero de servicio", fontSize = 17.sp)
                     }
-
                     Text(
-                        modifier = Modifier.fillMaxWidth(0.4f),
                         text = serviceNumber,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.End
+                        fontSize = 17.sp,
+                        modifier = Modifier.alpha(0.5f)
                     )
+                }
 
-                    if (openServiceNumberEditor) {
+                if (openServiceNumberEditor) {
+                    var serviceNumberBuffer by remember { mutableStateOf(serviceNumber) }
 
-                        var serviceNumberBuffer by remember { mutableStateOf(serviceNumber) }
-
-                        AlertDialog(
-                            onDismissRequest = { openServiceNumberEditor = false },
-                            title = { Text("Numero de servicio del FISE") },
-                            text = {
-                                OutlinedTextField(
-                                    value = serviceNumberBuffer,
-                                    onValueChange = {
-                                        serviceNumberBuffer = it
-                                    },
-                                    label = { Text("Numero de servicio") },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            },
-                            confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        viewModel.setServiceNumber(serviceNumberBuffer)
-                                        openServiceNumberEditor = false
-                                    }
-                                ) {
-                                    Text("Guardar")
-                                }
-                            },
-                            dismissButton = {
-                                TextButton(
-                                    onClick = {
-                                        openServiceNumberEditor = false
-                                    }
-                                ) {
-                                    Text("Cancelar")
-                                }
+                    AlertDialog(
+                        onDismissRequest = { openServiceNumberEditor = false },
+                        title = { Text("Numero de servicio del FISE") },
+                        text = {
+                            OutlinedTextField(
+                                value = serviceNumberBuffer,
+                                onValueChange = { serviceNumberBuffer = it },
+                                label = { Text("Numero de servicio") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                viewModel.setServiceNumber(serviceNumberBuffer)
+                                openServiceNumberEditor = false
+                            }) {
+                                Text("Guardar")
                             }
-                        )
-                    }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { openServiceNumberEditor = false }) {
+                                Text("Cancelar")
+                            }
+                        }
+                    )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.padding(vertical = 16.dp))
-        Card() {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Spacer(modifier = Modifier.height(32.dp))
 
+        // Sección: Funciones
+        Text(
+            text = "FUNCIONES",
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.8.sp,
+            modifier = Modifier
+                .alpha(0.45f)
+                .padding(bottom = 10.dp)
+        )
+
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ) {
+            Column {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(0.6f),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Visibility,
-                            contentDescription = "Vision en tiempo real Icono"
+                            contentDescription = null,
+                            modifier = Modifier.alpha(0.6f)
                         )
-                        Text(text = "Vision en tiempo real", fontSize = 18.sp)
+                        Text(text = "Vision en tiempo real", fontSize = 17.sp)
                     }
                     Switch(
-                        modifier = Modifier.fillMaxWidth(0.4f),
                         checked = realtimeVisionFeatureEnabled,
-                        onCheckedChange = {
-                            viewModel.toggleRealtimeVisionFeature(it)
-                        },
+                        onCheckedChange = { viewModel.toggleRealtimeVisionFeature(it) },
                         thumbContent = if (realtimeVisionFeatureEnabled) {
                             {
                                 Icon(
@@ -241,36 +252,32 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                                     modifier = Modifier.size(SwitchDefaults.IconSize),
                                 )
                             }
-                        } else {
-                            null
-                        }
+                        } else null
                     )
                 }
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(0.6f),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Fingerprint,
-                            contentDescription = "Solicitar huella al iniciar Icono"
+                            contentDescription = null,
+                            modifier = Modifier.alpha(0.6f)
                         )
-                        Text(text = "Solicitar huella al iniciar", fontSize = 18.sp)
+                        Text(text = "Solicitar huella al iniciar", fontSize = 17.sp)
                     }
                     Switch(
-                        modifier = Modifier.fillMaxWidth(0.4f),
                         enabled = false,
                         checked = checkedAuthFeature,
-                        onCheckedChange = {
-                            checkedAuthFeature = it
-                        },
+                        onCheckedChange = { checkedAuthFeature = it },
                         thumbContent = if (checkedAuthFeature) {
                             {
                                 Icon(
@@ -279,12 +286,12 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                                     modifier = Modifier.size(SwitchDefaults.IconSize),
                                 )
                             }
-                        } else {
-                            null
-                        }
+                        } else null
                     )
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
