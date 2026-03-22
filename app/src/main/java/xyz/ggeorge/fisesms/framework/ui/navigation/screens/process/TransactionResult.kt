@@ -239,8 +239,7 @@ private fun ResultRow(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(CircleShape)
-                    .background(accentColor.copy(alpha = 0.15f)),
+                    .clip(RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
